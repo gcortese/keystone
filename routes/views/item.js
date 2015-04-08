@@ -4,8 +4,18 @@ var keystone = require('../../'),
 
 exports = module.exports = function(req, res) {
 	
-	var itemQuery = req.list.model.findById(req.params.item);
-	
+	//var itemQuery = req.list.model.findById(req.params.item);
+	var itemQuery;
+	//FABRIZIO
+	if (req.list.get('owner') && !req.user.isAdmin)
+	{
+		itemQuery = req.list.model.findById(req.params.item).where(req.list.get('owner'), req.user);
+	}
+	else 
+	{
+		itemQuery = req.list.model.findById(req.params.item);
+	}
+	//FABRIZIO
 	if (req.list.tracking && req.list.tracking.createdBy) {
 		itemQuery.populate(req.list.tracking.createdBy);
 	}

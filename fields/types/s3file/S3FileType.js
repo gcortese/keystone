@@ -246,7 +246,7 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
 	var field = this,
 		path = field.options.s3path ? field.options.s3path + '/' : '',
 		prefix = field.options.datePrefix ? moment().format(field.options.datePrefix) + '-' : '',
-		filename = prefix + file.name,
+		filename = prefix + file.originalname,//FABRIZIO
 		filetype = file.mimetype || file.type;
 
 	if (field.options.allowedTypes && !_.contains(field.options.allowedTypes, filetype)) {
@@ -290,6 +290,7 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
 			};
 
 			if (update) {
+				field.apply(item, 'delete');//FABRIZIO
 				item.set(field.path, fileData);
 			}
 

@@ -69,7 +69,8 @@ relationship.prototype.addToSchema = function() {
 		ref: this.options.ref,
 		index: (this.options.index ? true : false),
 		required: (this.options.required ? true : false),
-		unique: (this.options.unique ? true : false)
+		unique: (this.options.unique ? true : false),
+		userNoEdit: (this.options.userNoEdit ? true : false)//FABRIZIO
 	};
 
 	schema.path(this.path, this.many ? [def] : def);

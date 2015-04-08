@@ -57,7 +57,7 @@ module.exports = Field.create({
 			this.fileFieldNode().value = "";
 		} else if (this.hasExisting()) {
 			state.removeExisting = true;
-
+			
 			if (this.props.autoCleanup) {
 				if (e.altKey) {
 					state.action = "reset";

@@ -25,6 +25,7 @@ block js
 		Keystone.sort = "#{sort.by}";
 		Keystone.query = "#{query}";
 		Keystone.csrf_query = "!{csrf_query}";
+		Keystone.user = !{JSON.stringify(user)};
 		
 		App.Views.List.render();
 			

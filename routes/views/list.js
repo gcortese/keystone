@@ -56,7 +56,19 @@ exports = module.exports = function(req, res) {
 	
 	var renderView = function() {
 		
-		var query = req.list.paginate({ filters: queryFilters, page: req.params.page, perPage: req.list.get('perPage') }).sort(sort.by);
+		//var query = req.list.paginate({ filters: queryFilters, page: req.params.page, perPage: req.list.get('perPage') }).sort(sort.by);
+		//FABRIZIO
+		var query;
+		if (req.list.get('owner') && !req.user.isAdmin)
+		{
+			query = req.list.paginate({ filters: queryFilters, page: req.params.page, perPage: req.list.get('perPage') }).sort(sort.by).where(req.list.get('owner'), req.user);
+		//console.log("User!!-------------------" + req.list.get('owner'));
+		}
+		else 
+		{
+			query = req.list.paginate({ filters: queryFilters, page: req.params.page, perPage: req.list.get('perPage') }).sort(sort.by);
+		}
+		//FABRIZIO
 		
 		req.list.selectColumns(query, columns);
 		

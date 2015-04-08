@@ -16,14 +16,18 @@ block content
 					h3: a(href=path)= list.label
 		else
 			each navSection in nav.sections
-				.nav-section
-					h4= navSection.label
-					ul: each list in navSection.lists
-						if list.external
-							- path = list.path
-						else
-							- path = '/keystone/' + list.path
-						li: a(href=path)= list.label
+				//-FABRIZIO
+				if navSection.owner == user.role || user.isAdmin
+					.nav-section
+						h4= navSection.label
+						ul: each list in navSection.lists
+							//-FABRIZIO
+							if user && (user.isAdmin || user.role == list.get('owner'))
+								if list.external
+									- path = list.path
+								else
+									- path = '/keystone/' + list.path
+								li: a(href=path)= list.label
 			if orphanedLists.length
 				.nav-section
 					h4 Other

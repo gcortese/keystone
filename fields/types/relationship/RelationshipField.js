@@ -165,12 +165,32 @@ module.exports = Field.create({
 		}
 		var body = [];
 		
-		body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
+		//body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
 		
-		if (!this.props.many && this.props.value) {
+		//FABRIZIO
+		if (this.props.userNoEdit && Keystone.user && !Keystone.user.isAdmin)
+		{
+			body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} disabled={this.props.userNoEdit} class='disabled'/>);
+		}
+		else
+		{
+			body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
+					  
+		}
+		//FABRIZIO
+		//if (!this.props.many && this.props.value) {//FABRIZIO
+		if (!this.props.many && this.props.value && (!this.props.userNoEdit || Keystone.user.isAdmin)) {
 			body.push(
 				<a href={'/keystone/' + this.props.refList.path + '/' + this.props.value} className='btn btn-link btn-goto-linked-item'>
 					view {this.props.refList.singular.toLowerCase()}
+				</a>
+			);
+		}
+		else if (this.props.many) //FABRIZIO(aggiunto else)
+		{
+			body.push(
+				<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item'>
+					create new {this.props.refList.singular.toLowerCase()}
 				</a>
 			);
 		}

@@ -29,13 +29,30 @@ exports = module.exports = function(req, res) {
 				skip = limit * (page - 1);
 				
 			var filters = req.list.getSearchFilters(req.query.q);
-
-			var count = req.list.model.count(filters),
+//			var count = req.list.model.count(filters),
+//				query = req.list.model.find(filters)
+//					.limit(limit)
+//					.skip(skip)
+//					.sort(req.list.defaultSort);
+			//FABRIZIO
+			var count = req.list.model.count(filters);
+			var query;
+			if (req.list.get('owner') && !req.user.isAdmin)
+			{
 				query = req.list.model.find(filters)
-					.limit(limit)
-					.skip(skip)
-					.sort(req.list.defaultSort);
-
+						.limit(limit)
+						.skip(skip)
+						.sort(req.list.defaultSort)
+						.where(req.list.get('owner'), req.user );
+			}
+			else 
+			{
+				query = req.list.model.find(filters)
+						.limit(limit)
+						.skip(skip)
+						.sort(req.list.defaultSort);
+			}
+			//FABRIZIO
 			if (req.query.context === 'relationship') {
 				var srcList = keystone.list(req.query.list);
 				if (!srcList) return sendError('invalid list provided');

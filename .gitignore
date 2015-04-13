@@ -30,4 +30,7 @@ coverage
 coverage.html
 .cover*
 
+*.min.css
+
 *.sublime-*
+*.directory

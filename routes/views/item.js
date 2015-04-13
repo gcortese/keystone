@@ -159,8 +159,19 @@ exports = module.exports = function(req, res) {
 				
 				var appName = keystone.get('name') || 'Keystone';
 				
+				var section;//FABRIZIO
+				if(req.user.isAdmin)
+				{
+					section = keystone.nav.by.list[req.list.key] || {};
+				}
+				else 
+				{
+					section = 'dashboard';
+				}
+				
 				keystone.render(req, res, 'item', _.extend(viewLocals, {
-					section: keystone.nav.by.list[req.list.key] || {},
+					section: section,
+					subSection: req.list.path,
 					title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
 					page: 'item',
 					list: req.list,

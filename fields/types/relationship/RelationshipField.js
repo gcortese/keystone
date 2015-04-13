@@ -189,9 +189,9 @@ module.exports = Field.create({
 		else if (this.props.many) //FABRIZIO(aggiunto else)
 		{
 			body.push(
-				<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item'>
-					create new {this.props.refList.singular.toLowerCase()}
-				</a>
+					<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item' target='_blank'>
+						create new {this.props.refList.singular.toLowerCase()} (in a new tab)
+					</a>
 			);
 		}
 		

@@ -123,10 +123,20 @@ exports = module.exports = function(req, res) {
 			}
 			
 			var appName = keystone.get('name') || 'Keystone';
+			var section;//FABRIZIO
+			if(req.user.isAdmin)
+			{
+				section = keystone.nav.by.list[req.list.key] || {};
+			}
+			else 
+			{
+				section = 'dashboard';
+			}
 			
 			keystone.render(req, res, 'list', _.extend(viewLocals, {
-				section: keystone.nav.by.list[req.list.key] || {},
+				section: section,
 				title: appName + ': ' + req.list.plural,
+				subSection: req.list.path,//FABRIZIO
 				page: 'list',
 				link_to: link_to,
 				download_link: download_link,

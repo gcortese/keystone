@@ -172,7 +172,8 @@ exports = module.exports = function(req, res) {
 				keystone.render(req, res, 'item', _.extend(viewLocals, {
 					section: section,
 					subSection: req.list.path,
-					title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
+					//title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
+					title: req.list.singular + ' - ' + appName,
 					page: 'item',
 					list: req.list,
 					item: item,

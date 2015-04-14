@@ -135,7 +135,7 @@ exports = module.exports = function(req, res) {
 			
 			keystone.render(req, res, 'list', _.extend(viewLocals, {
 				section: section,
-				title: appName + ': ' + req.list.plural,
+				title: req.list.plural + ' - ' + appName,
 				subSection: req.list.path,//FABRIZIO
 				page: 'list',
 				link_to: link_to,

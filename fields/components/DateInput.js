@@ -3,7 +3,9 @@ var React = require('react'),
 	moment = require('moment');
 
 module.exports = React.createClass({
-
+	
+	displayName: 'DateInput',
+	
 	// set default properties
 	getDefaultProps: function() {
 		return {
@@ -13,15 +15,17 @@ module.exports = React.createClass({
 	
 	getInitialState: function() {
 		return {
-			value: this.props.value
+			value: this.props.value,
+			id: Math.round(Math.random() * 100000)
 		};
 	},
 	
 	componentWillReceiveProps: function(newProps) {
+		if (newProps.value === this.state.value) return;
 		this.setState({
 			value: newProps.value
 		});
-		this.picker.setDate(newProps.value);
+		this.picker.setMoment(moment(newProps.value, this.props.format));
 	},
 
 	componentDidMount: function() {
@@ -29,7 +33,8 @@ module.exports = React.createClass({
 		this.picker = new Pikaday({ 
 			field: this.getDOMNode(),
 			format: this.props.format,
-			onSelect: function(date) {
+			yearRange: this.props.yearRange,
+			onSelect: function(date) {//eslint-disable-line no-unused-vars
 				if (this.props.onChange && this.picker.toString() !== this.props.value) {
 					this.props.onChange(this.picker.toString());
 				}
@@ -43,13 +48,13 @@ module.exports = React.createClass({
 	},
 	
 	handleChange: function(e) {
+		if (e.target.value === this.state.value) return;
 		this.setState({ value: e.target.value });
 	},
 	
-	handleBlur: function(e) {
-		if (this.state.value !== this.props.value) {
-			this.picker.setDate(this.state.value);
-		}
+	handleBlur: function(e) {//eslint-disable-line no-unused-vars
+		if (this.state.value === this.props.value) return;
+		this.picker.setMoment(moment(this.state.value, this.props.format));
 	},
 
 	render: function() {

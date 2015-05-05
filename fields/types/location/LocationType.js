@@ -26,6 +26,8 @@ function location(list, path, options) {
 
 	this.enableMapsAPI = keystone.get('google api key') ? true : false;
 
+	this._properties = ['enableMapsAPI'];
+
 	if (!options.defaults) {
 		options.defaults = {};
 	}
@@ -193,18 +195,18 @@ location.prototype.isModified = function(item) {
  */
 
 location.prototype.validateInput = function(data, required, item) {
-	
+
 	if (!required) {
 		return true;
 	}
-	
+
 	var paths = this.paths,
 		nested = this._path.get(data),
 		values = nested || data,
 		valid = true;
-	
+
 	this.requiredPaths.forEach(function(path) {
-		
+
 		if (nested) {
 			if (!(path in values) && item && item.get(paths[path])) {
 				return;
@@ -220,11 +222,11 @@ location.prototype.validateInput = function(data, required, item) {
 				valid = false;
 			}
 		}
-		
+
 	});
-	
+
 	return valid;
-	
+
 };
 
 
@@ -242,7 +244,7 @@ location.prototype.updateItem = function(item, data) {
 		valueKeys = fieldKeys.concat(geoKeys),
 		valuePaths = valueKeys,
 		values = this._path.get(data);
-	
+
 	if (!values) {
 		// Handle flattened values
 		valuePaths = valueKeys.map(function(i) {
@@ -250,10 +252,10 @@ location.prototype.updateItem = function(item, data) {
 		});
 		values = _.pick(data, valuePaths);
 	}
-	
+
 	// convert valuePaths to a map for easier usage
 	valuePaths = _.object(valueKeys, valuePaths);
-	
+
 	var setValue = function(key) {
 		if (valuePaths[key] in values && values[valuePaths[key]] !== item.get(paths[key])) {
 			item.set(paths[key], values[valuePaths[key]] || null);
@@ -421,7 +423,7 @@ location.prototype.googleLookup = function(item, region, update, callback) {
 	doGoogleGeocodeRequest(address, region || keystone.get('default region'), function(err, geocode){
 
 		if (err || geocode.status !== 'OK') {
-			return callback(err);
+			return callback(err || new Error(geocode.status + ': ' + geocode.error_message));
 		}
 
 		// use the first result
@@ -433,25 +435,25 @@ location.prototype.googleLookup = function(item, region, update, callback) {
 		var location = {};
 
 		_.each(result.address_components, function(val){
-			if ( _.indexOf(val.types,'street_number') >= 0 ) {
+			if ( _.indexOf(val.types, 'street_number') >= 0 ) {
 				location.street1 = location.street1 || [];
 				location.street1.push(val.long_name);
 			}
-			if ( _.indexOf(val.types,'route') >= 0 ) {
+			if ( _.indexOf(val.types, 'route') >= 0 ) {
 				location.street1 = location.street1 || [];
 				location.street1.push(val.short_name);
 			}
 			// in some cases, you get suburb, city as locality - so only use the first
-			if ( _.indexOf(val.types,'locality') >= 0 && !location.suburb) {
+			if ( _.indexOf(val.types, 'locality') >= 0 && !location.suburb) {
 				location.suburb = val.long_name;
 			}
-			if ( _.indexOf(val.types,'administrative_area_level_1') >= 0 ) {
+			if ( _.indexOf(val.types, 'administrative_area_level_1') >= 0 ) {
 				location.state = val.short_name;
 			}
-			if ( _.indexOf(val.types,'country') >= 0 ) {
+			if ( _.indexOf(val.types, 'country') >= 0 ) {
 				location.country = val.long_name;
 			}
-			if ( _.indexOf(val.types,'postal_code') >= 0 ) {
+			if ( _.indexOf(val.types, 'postal_code') >= 0 ) {
 				location.postcode = val.short_name;
 			}
 		});
@@ -507,9 +509,10 @@ function calculateDistance(point1, point2) {
 	var lat1 = (point1[1]) * Math.PI / 180;
 	var lat2 = (point2[1]) * Math.PI / 180;
 
+	/* eslint-disable space-infix-ops */
 	var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
 	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
+	/* eslint-enable space-infix-ops */
 	return c;
 
 }

@@ -1,11 +1,22 @@
 var Select = require('react-select'),
 	React = require('react'),
 	Field = require('../Field'),
-	Note = require('../../components/Note'),
 	superagent = require('superagent'),
 	_ = require('underscore');
 
 module.exports = Field.create({
+	
+	displayName: 'RelationshipField',
+	
+	shouldCollapse: function() {
+		// many:true relationships have an Array for a value
+		// so need to check length instead
+		if(this.props.many) {
+			return this.props.collapse && !this.props.value.length;
+		}
+		
+		return this.props.collapse && !this.props.value;
+	},
 	
 	getInitialState: function() {
 		return {
@@ -44,7 +55,11 @@ module.exports = Field.create({
 		
 		if (!inputs.length) return finish();
 		
+		var callbackCount = 0;
 		_.each(inputs, function(input) {
+			expandedValues.push({
+				value: input
+			});
 			superagent
 				.get('/keystone/api/' + self.props.refList.path + '/get?dataset=simple&id=' + input)
 				.set('Accept', 'application/json')
@@ -52,13 +67,10 @@ module.exports = Field.create({
 					if (err) throw err;
 					
 					var value = res.body;
-					
-					expandedValues.push({
-						value: value.id,
-						label: value.name
-					});
-					
-					if (expandedValues.length === inputs.length) {
+					_.findWhere(expandedValues, {value: value.id}).label = value.name;
+
+					callbackCount++;
+					if (callbackCount === inputs.length) {
 						finish();
 					}
 				});
@@ -69,8 +81,8 @@ module.exports = Field.create({
 		var filters = {};
 		
 		_.each(this.props.filters, function(value, key) {
-			if(_.isString(value) && value[0] == ':') {
-				fieldName = value.slice(1);
+			if(_.isString(value) && value[0] == ':') {//eslint-disable-line eqeqeq
+				var fieldName = value.slice(1);
 
 				var val = this.props.values[fieldName];
 				if (val) {
@@ -92,13 +104,16 @@ module.exports = Field.create({
 		
 		_.each(filters, function (val, key) {
 			parts.push('filters[' + key + ']=' + encodeURIComponent(val));
-		})
+		});
 		
 		return parts.join('&');
 	},
 
 	buildOptionQuery: function (input) {
-		return 'context=relationship&q=' + input + '&list=' + Keystone.list.path + '&field=' + this.props.path + '&' + this.buildFilters()
+		return 'context=relationship&q=' + input +
+				'&list=' + Keystone.list.path +
+				'&field=' + this.props.path +
+				'&' + this.buildFilters();
 	},
 
 	getOptions: function(input, callback) {
@@ -141,19 +156,15 @@ module.exports = Field.create({
 		if (!this.state.ready) {
 			return this.renderLoadingUI();
 		}
-		// TODO expand IDs
-		if (this.props.many) {
-			// a(href='/keystone/' + refList.path + '/' + item.get(field.path), data-ref-path=refList.path).ui-related-item= item.get(field.path)
-			return <div className='field-value'>{this.props.value}</div>;
-		} else if (this.props.many && this.props.value.length) {
-			// var body = [];
-			// 
-			// _.each(this.props.value, function (value) {
-			// 	body.push(<a href={'/keystone/' + this.props.refList.path + '/' + value} className='ui-related-item'>{value}</a>);
-			// }, this);
-			// 
-			// return value;
-			return <div className='field-value'>{this.props.value}</div>;
+		// Todo: this is only a temporary fix, remodel
+		if (this.state.expandedValues && this.state.expandedValues.length) {
+			var body = [];
+			
+			_.each(this.state.expandedValues, function (item) {
+				body.push(<a href={'/keystone/' + this.props.refList.path + '/' + item.value} className='related-item-link'>{item.label}</a>);
+			}, this);
+			
+			return body;
 		} else {
 			return <div className='field-value'>(not set)</div>;
 		}
@@ -186,7 +197,7 @@ module.exports = Field.create({
 				</a>
 			);
 		}
-		else if (this.props.many) //FABRIZIO(aggiunto else)
+		else if (this.props.many && !this.props.userNoEdit) //FABRIZIO(aggiunto else)
 		{
 			body.push(
 					<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item' target='_blank'>

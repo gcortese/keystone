@@ -83,7 +83,7 @@ cloudinaryimages.prototype.addToSchema = function() {
 	});
 
 	// Generate cloudinary folder used to upload/select images
-	var folder = function(item) {
+	var folder = function(item) {//eslint-disable-line no-unused-vars
 		var folderValue = '';
 
 		if (keystone.get('cloudinary folders')) {
@@ -213,7 +213,7 @@ cloudinaryimages.prototype.format = function(item) {
  * @api public
  */
 
-cloudinaryimages.prototype.isModified = function(item) {
+cloudinaryimages.prototype.isModified = function(item) {//eslint-disable-line no-unused-vars
 	// TODO - how should this be detected?
 	return true;
 };
@@ -225,7 +225,7 @@ cloudinaryimages.prototype.isModified = function(item) {
  * @api public
  */
 
-cloudinaryimages.prototype.validateInput = function(data) {
+cloudinaryimages.prototype.validateInput = function(data) {//eslint-disable-line no-unused-vars
 	// TODO - how should image field input be validated?
 	return true;
 };
@@ -237,7 +237,7 @@ cloudinaryimages.prototype.validateInput = function(data) {
  * @api public
  */
 
-cloudinaryimages.prototype.updateItem = function(item, data) {
+cloudinaryimages.prototype.updateItem = function(item, data) {//eslint-disable-line no-unused-vars
 	// TODO - direct updating of data (not via upload)
 };
 
@@ -309,8 +309,9 @@ cloudinaryimages.prototype.getRequestHandler = function(item, req, paths, callba
 
 			var tp = keystone.get('cloudinary prefix') || '';
 
-			if (tp.length)
+			if (tp.length) {
 				tp += '_';
+			}
 
 			var uploadOptions = {
 				tags: [tp + field.list.path + '_' + field.path, tp + field.list.path + '_' + field.path + '_' + item.id]
@@ -320,11 +321,13 @@ cloudinaryimages.prototype.getRequestHandler = function(item, req, paths, callba
 				uploadOptions.folder = item.get(paths.folder);
 			}
 
-			if (keystone.get('cloudinary prefix'))
+			if (keystone.get('cloudinary prefix')) {
 				uploadOptions.tags.push(keystone.get('cloudinary prefix'));
+			}
 
-			if (keystone.get('env') !== 'production')
+			if (keystone.get('env') !== 'production') {
 				uploadOptions.tags.push(tp + 'dev');
+			}
 
 			async.each(files, function(file, next) {
 

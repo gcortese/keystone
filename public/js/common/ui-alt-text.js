@@ -7,13 +7,13 @@ jQuery(function($) {
 		this.$el = $(el);
 		this.originalText = this.$el.text();
 		this.altText = this.$el.data('alt-text');
-	}
+	};
 	
 	AltText.prototype.state = function(alt) {
 		
 		this.$el.text(alt ? this.altText : this.originalText);
 		
-	}
+	};
 	
 	// ALT-TEXT PLUGIN
 	// ===============
@@ -27,7 +27,7 @@ jQuery(function($) {
 			
 			altText.state(state);
 		});
-	}
+	};
 	
 	$.fn.altText.Constructor = AltText;
 	
@@ -35,12 +35,12 @@ jQuery(function($) {
 	// ==============
 	
 	$(document).on('keydown.ui.altText', function(e) {
-		if (e.which != 18) return;
+		if (e.which != 18) return;// eslint-disable-line eqeqeq
 		$('[data-alt-text]').altText(true);
 	});
 	
 	$(document).on('keyup.ui.altText', function(e) {
-		if (e.which != 18) return;
+		if (e.which != 18) return;// eslint-disable-line eqeqeq
 		$('[data-alt-text]').altText();
 	});
 	

@@ -5,13 +5,8 @@
 var _ = require('underscore'),
 	marked = require('marked'),
 	Path = require('../../lib/path'),
-	fspath = require('path'),
-	jade = require('jade'),
-	fs = require('fs'),
-	keystone = require('../../'),
 	utils = require('keystone-utils'),
-	compiledTemplates = {};
-
+	di = require('asyncdi');
 
 /**
  * Field Constructor
@@ -204,8 +199,15 @@ Field.prototype.getPreSaveWatcher = function() {
 		if (!applyValue(this)) {
 			return next();
 		}
-		this.set(field.path, field.options.value.call(this));
-		next();
+		di(field.options.value).call(this, function(err, val){
+			if(err){
+				console.error('\nError: ' +
+				'Watch set with value method for ' + field.list.key + '.' + field.path + ' (' + field.type + ') throws error:' + err);
+			}else{
+				this.set(field.path, val);
+			}
+			next();
+		}.bind(this));
 	};
 
 };
@@ -341,7 +343,7 @@ Field.prototype.updateItem = function(item, data) {
 	var value = this.getValueFromData(data);
 	
 	// This is a deliberate type coercion so that numbers from forms play nice
-	if (value !== undefined && value != item.get(this.path)) { // jshint ignore:line
+	if (value !== undefined && value != item.get(this.path)) { // eslint-disable-line eqeqeq
 		item.set(this.path, value);
 	}
 	

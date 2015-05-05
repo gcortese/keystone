@@ -1,12 +1,10 @@
-var assert = require('assert'),
-	keystone = require('../../../..'),
-	demand = require('must'),
-	UpdateHandler = require('../../../../lib/updateHandler');
+var demand = require('must'),
+	RelationshipType = require('../RelationshipType');
 
 exports.initList = function(List) {
 	List.add({
-		text: keystone.Field.Types.Text,
-		testRelationship: { type: keystone.Field.Types.Relationship, ref: 'Test', required: true, unique: true }
+		text: String,
+		testRelationship: { type: RelationshipType, ref: 'Test', required: true, unique: true }
 	});
 };
 
@@ -16,7 +14,7 @@ exports.testFieldType = function(List) {
 	it('should throw error if required field missing', function (done) {
 		new List.model({
 			text: 'value'
-		}).save(function(err, data) {
+		}).save(function(err, data) {// eslint-disable-line no-unused-vars
 			err.errors.testRelationship.message.must.equal('Path `testRelationship` is required.');
 			done();
 		});
@@ -27,8 +25,10 @@ exports.testFieldType = function(List) {
 			text: 'value',
 			testRelationship: testItem._id
 		}).save(function(err, data) {
-			if (err)
-				throw new err;
+			if (err) {
+				throw err;
+			}
+			
 			demand(data.testRelationship).equal(testItem._id);
 			demand(data.text).equal('value');
 			done();
@@ -39,7 +39,7 @@ exports.testFieldType = function(List) {
 		new List.model({
 			text: 'value',
 			testRelationship: testItem._id
-		}).save(function(err, data) {
+		}).save(function(err, data) {// eslint-disable-line no-unused-vars
 			demand(err.code).equal(11000);
 			done();
 		});

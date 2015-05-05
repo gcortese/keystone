@@ -1,8 +1,9 @@
 var React = require('react'),
-	Field = require('../Field'),
-	Note = require('../../components/Note');
+	Field = require('../Field');
 
 module.exports = Field.create({
+	
+	displayName: 'GeopointField',
 
 	focusTargetRef: 'lat',
 	
@@ -16,7 +17,7 @@ module.exports = Field.create({
 	
 	renderValue: function() {
 		if (this.props.value[1] && this.props.value[0]) {
-			return <div className="field-value">{this.props.value[1]}, {this.props.value[0]}</div>;
+			return <div className="field-value">{this.props.value[1]}, {this.props.value[0]}</div>;//eslint-disable-line comma-spacing
 		}
 		return <div className="field-value">(not set)</div>;
 	},

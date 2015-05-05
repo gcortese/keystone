@@ -5,6 +5,8 @@ var React = require('react'),
 	moment = require('moment');
 
 module.exports = Field.create({
+	
+	displayName: 'DateField',
 
 	focusTargetRef: 'dateInput',
 
@@ -38,7 +40,7 @@ module.exports = Field.create({
 		this.setState({ value: dateValue });
 		this.props.onChange({
 			path: this.props.path,
-			value: this.isValid(dateValue) ? moment(dateValue, this.inputFormat).toISOString() : null
+			value: this.isValid(dateValue) ? dateValue : null
 		});
 	},
 
@@ -57,7 +59,7 @@ module.exports = Field.create({
 		if (this.shouldRenderField()) {
 			input = (
 				<div className={fieldClassName}>
-					<DateInput ref="dateInput" name={this.props.path} format={this.inputFormat} value={this.state.value} onChange={this.valueChanged} />
+					<DateInput ref="dateInput" name={this.props.path} format={this.inputFormat} value={this.state.value} onChange={this.valueChanged} yearRange={this.props.yearRange} />
 					<button type="button" className="btn btn-default btn-set-today" onClick={this.setToday}>Today</button>
 				</div>
 			);

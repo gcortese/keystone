@@ -24,7 +24,7 @@ exports = module.exports = function(req, res) {
 	switch (req.params.action) {
 
 		case 'autocomplete':
-			var limit = req.query.limit || 10,
+			var limit = req.query.limit || 50,
 				page = req.query.page || 1,
 				skip = limit * (page - 1);
 				
@@ -78,7 +78,7 @@ exports = module.exports = function(req, res) {
 						total: total,
 						items: items.map(function(i) {
 							return {
-								name: req.list.getDocumentName(i, true) || '(' + i.id + ')',
+								name: req.list.getDocumentName(i, false) || '(' + i.id + ')',
 								id: i.id
 							};
 						})
@@ -101,7 +101,7 @@ exports = module.exports = function(req, res) {
 				switch (req.query.dataset) {
 					case 'simple':
 						return sendResponse({
-							name: req.list.getDocumentName(item, true),
+							name: req.list.getDocumentName(item, false),
 							id: item.id
 						});
 					default:
@@ -173,7 +173,7 @@ exports = module.exports = function(req, res) {
 				} else {
 					return sendResponse({
 						success: true,
-						name: req.list.getDocumentName(item, true),
+						name: req.list.getDocumentName(item, false),
 						id: item.id
 					});
 				}
@@ -193,7 +193,7 @@ exports = module.exports = function(req, res) {
 
 			var id = req.body.id || req.query.id;
 			
-			if (id === req.user.id) {
+			if (req.user && id === req.user.id) {
 				return sendError('You can not delete yourself');
 			}
 			

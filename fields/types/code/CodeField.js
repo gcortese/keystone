@@ -1,15 +1,14 @@
-var React = require('react'),
+var _ = require('underscore'),
+	React = require('react'),
 	Field = require('../Field'),
-	Note = require('../../components/Note'),
 	CodeMirror = require('codemirror');
 
 // See CodeMirror docs for API:
 // http://codemirror.net/doc/manual.html
 
-// TODO:
-// Bring forward mime-type language support and features (needs review)
-
 module.exports = Field.create({
+	
+	displayName: 'CodeField',
 	
 	getInitialState: function() {
 		return {
@@ -18,17 +17,20 @@ module.exports = Field.create({
 	},
 	
 	componentDidMount: function() {
-		if (this.refs.codemirror) {
-			var options = {
-				lineNumbers: true,
-				readOnly: this.shouldRenderField() ? false : true
-			};
-			this.codeMirror = CodeMirror.fromTextArea(this.refs.codemirror.getDOMNode(), options);
-			this.codeMirror.on('change', this.codemirrorValueChanged);
-			this.codeMirror.on('focus', this.focusChanged.bind(this, true));
-			this.codeMirror.on('blur', this.focusChanged.bind(this, false));
-			this._currentCodemirrorValue = this.props.value;
+		if (!this.refs.codemirror) {
+			return;
 		}
+		
+		var options = _.defaults({}, this.props.editor, {
+			lineNumbers: true,
+			readOnly: this.shouldRenderField() ? false : true
+		});
+		
+		this.codeMirror = CodeMirror.fromTextArea(this.refs.codemirror.getDOMNode(), options);
+		this.codeMirror.on('change', this.codemirrorValueChanged);
+		this.codeMirror.on('focus', this.focusChanged.bind(this, true));
+		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
+		this._currentCodemirrorValue = this.props.value;
 	},
 	
 	componentWillUnmount: function() {
@@ -56,7 +58,7 @@ module.exports = Field.create({
 		});
 	},
 	
-	codemirrorValueChanged: function(doc, change) {
+	codemirrorValueChanged: function(doc, change) {//eslint-disable-line no-unused-vars
 		var newValue = doc.getValue();
 		this._currentCodemirrorValue = newValue;
 		this.props.onChange({
@@ -67,7 +69,7 @@ module.exports = Field.create({
 	
 	renderCodemirror: function() {
 		var className = 'CodeMirror-container';
-		if (this.state.isFocused && !this.shouldRenderField()) {
+		if (this.state.isFocused && this.shouldRenderField()) {
 			className += ' is-focused';
 		}
 		return (

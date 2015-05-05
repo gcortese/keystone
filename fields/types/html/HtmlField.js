@@ -11,31 +11,63 @@ function getId() {
 
 module.exports = Field.create({
 	
+	displayName: 'HtmlField',
+	
 	getInitialState: function() {
 		return {
-			id: getId()
+			id: getId(),
+			isFocused: false
 		};
 	},
 
-	componentDidMount: function() {
+	initWysiwyg: function() {
 		if (!this.props.wysiwyg) return;
-		
+
 		var self = this;
 		var opts = this.getOptions();
 
 		opts.setup = function (editor) {
 			self.editor = editor;
 			editor.on('change', self.valueChanged);
+			editor.on('focus', self.focusChanged.bind(self, true));
+			editor.on('blur', self.focusChanged.bind(self, false));
 		};
 
 		this._currentValue = this.props.value;
 		tinymce.init(opts);
+	},
+
+	componentDidUpdate: function(prevProps, prevState) {
+		if (prevState.isCollapsed && !this.state.isCollapsed) {
+			this.initWysiwyg();
+		}
+		
+		if (_.isEqual(this.props.dependsOn, this.props.currentDependencies)
+			&& !_.isEqual(this.props.currentDependencies, prevProps.currentDependencies)) {
+			var instance = tinymce.get(prevState.id);
+			if (instance) {
+				tinymce.EditorManager.execCommand('mceRemoveEditor', true, prevState.id);
+				this.initWysiwyg();
+			} else {
+				this.initWysiwyg();
+			}
+		}
+	},
+
+	componentDidMount: function() {
+		this.initWysiwyg();
 	},
 	
 	componentWillReceiveProps: function(nextProps) {
 		if (this.editor && this._currentValue !== nextProps.value) {
 			this.editor.setContent(nextProps.value);
 		}
+	},
+	
+	focusChanged: function(focused) {
+		this.setState({
+			isFocused: focused
+		});
 	},
 
 	valueChanged: function () {
@@ -56,41 +88,49 @@ module.exports = Field.create({
 	},
 
 	getOptions: function() {
-  		var plugins = [ 'code', 'link' ],
-  			toolbar = Keystone.wysiwyg.options.overrideToolbar ? '' : 'bold italic | alignleft aligncenter alignright | bullist numlist | outdent indent | link';
+		var plugins = ['code', 'link'],
+			options = _.defaults(
+				{},
+				this.props.wysiwyg,
+				Keystone.wysiwyg.options
+			),
+			toolbar = options.overrideToolbar ? '' : 'bold italic | alignleft aligncenter alignright | bullist numlist | outdent indent | link',
+			i;
 
-		if (Keystone.wysiwyg.options.enableImages) {
+		if (options.enableImages) {
 			plugins.push('image');
 			toolbar += ' | image';
 		}
 
-		if (Keystone.wysiwyg.options.enableCloudinaryUploads) {
+		if (options.enableCloudinaryUploads) {
 			plugins.push('uploadimage');
-			toolbar += Keystone.wysiwyg.options.enableImages ? ' uploadimage' : ' | uploadimage';
+			toolbar += options.enableImages ? ' uploadimage' : ' | uploadimage';
 		}
 
-		if (Keystone.wysiwyg.options.additionalButtons) {
-			var additionalButtons = Keystone.wysiwyg.options.additionalButtons.split(',');
-			for (var i = 0; i < additionalButtons.length; i++) {
+		if (options.additionalButtons) {
+			var additionalButtons = options.additionalButtons.split(',');
+			for (i = 0; i < additionalButtons.length; i++) {
 				toolbar += (' | ' + additionalButtons[i]);
 			}
 		}
-		if (Keystone.wysiwyg.options.additionalPlugins) {
-			var additionalPlugins = Keystone.wysiwyg.options.additionalPlugins.split(',');
-			for (var i = 0; i < additionalPlugins.length; i++) {
+		if (options.additionalPlugins) {
+			var additionalPlugins = options.additionalPlugins.split(',');
+			for (i = 0; i < additionalPlugins.length; i++) {
 				plugins.push(additionalPlugins[i]);
 			}
 		}
-		if (Keystone.wysiwyg.options.importcss) {
+		if (options.importcss) {
 			plugins.push('importcss');
 			var importcssOptions = {
-				content_css: Keystone.wysiwyg.options.importcss,
+				content_css: options.importcss,
 				importcss_append: true,
 				importcss_merge_classes: true
 			};
-			$.extend(Keystone.wysiwyg.options.additionalOptions,importcssOptions);
+			
+			_.extend(options.additionalOptions, importcssOptions);
 		}
-		if (!Keystone.wysiwyg.options.overrideToolbar) {
+		
+		if (!options.overrideToolbar) {
 			toolbar += ' | code';
 		}
 
@@ -98,8 +138,8 @@ module.exports = Field.create({
 			selector: '#' + this.state.id,
 			toolbar:  toolbar,
 			plugins:  plugins,
-			menubar:  Keystone.wysiwyg.options.menubar || false,
-			skin:     Keystone.wysiwyg.options.skin || 'keystone'
+			menubar:  options.menubar || false,
+			skin:     options.skin || 'keystone'
 		};
 
 		if (this.shouldRenderField()) {
@@ -114,23 +154,27 @@ module.exports = Field.create({
 			});
 		}
 
-		if (Keystone.wysiwyg.options.additionalOptions){
-			_.extend(opts, Keystone.wysiwyg.options.additionalOptions);
+		if (options.additionalOptions){
+			_.extend(opts, options.additionalOptions);
 		}
 
 		return opts;
 	},
 
 	getFieldClassName: function() {
-		return this.props.wysiwyg ? 'wysiwyg' : 'code';
+		var className = this.props.wysiwyg ? 'wysiwyg' : 'code';
+		return className;
 	},
 	
 	renderEditor: function(readOnly) {
+		var className = this.state.isFocused ? 'is-focused' : '';
 		var style = {
 			height: this.props.height
 		};
 		return (
-			<textarea ref='editor' style={style} onChange={this.valueChanged} id={this.state.id} className={this.getFieldClassName()} name={this.props.path} readOnly={readOnly} value={this.props.value}></textarea>
+			<div className={className}>
+				<textarea ref='editor' style={style} onChange={this.valueChanged} id={this.state.id} className={this.getFieldClassName()} name={this.props.path} readOnly={readOnly} value={this.props.value}></textarea>
+			</div>
 		);
 	},
 

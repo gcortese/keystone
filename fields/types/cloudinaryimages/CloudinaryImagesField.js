@@ -1,11 +1,12 @@
 var _ = require('underscore'),
-	$ = require('jquery'),
 	React = require('react'),
 	Field = require('../Field');
 
-var SUPPORTED_TYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/x-icon', 'application/pdf', 'image/x-tiff', 'image/x-tiff', 'application/postscript', 'image/vnd.adobe.photoshop'];
+var SUPPORTED_TYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/x-icon', 'application/pdf', 'image/x-tiff', 'image/x-tiff', 'application/postscript', 'image/vnd.adobe.photoshop', 'image/svg+xml'];
 
 var Thumbnail = React.createClass({
+	
+	displayName: 'CloudinaryImagesField',
 	
 	render: function() {
 		var iconClassName, imageDetails;
@@ -19,8 +20,8 @@ var Thumbnail = React.createClass({
 		var previewClassName = 'image-preview';
 		if (this.props.deleted || this.props.isQueued) previewClassName += ' action';
 
-		var title = "";
-		var width  = this.props.width;
+		var title = '';
+		var width = this.props.width;
 		var height = this.props.height;
 		if (width && height) title = width + ' x ' + height;
 
@@ -65,7 +66,7 @@ module.exports = Field.create({
 
 	removeThumbnail: function (i) {
 		var thumbs = this.state.thumbnails;
-		var thumb  = thumbs[i];
+		var thumb = thumbs[i];
 
 		if (thumb.props.isQueued) {
 			thumbs[i] = null;
@@ -102,7 +103,7 @@ module.exports = Field.create({
 	},
 
 	clearFiles: function() {
-		this.fileFieldNode().value = "";
+		this.fileFieldNode().value = '';
 
 		this.setState({
 			thumbnails: this.state.thumbnails.filter(function (thumb) {
@@ -117,7 +118,7 @@ module.exports = Field.create({
 		var files = event.target.files;
 		_.each(files, function (f) {
 			if (!_.contains(SUPPORTED_TYPES, f.type)) {
-				alert("Unsupported file type. Supported formats are: GIF, PNG, JPG, BMP, ICO, PDF, TIFF, EPS, PSD");
+				alert('Unsupported file type. Supported formats are: GIF, PNG, JPG, BMP, ICO, PDF, TIFF, EPS, PSD, SVG');
 				return;
 			}
 
@@ -129,7 +130,7 @@ module.exports = Field.create({
 				};
 				fileReader.readAsDataURL(f);
 			} else {
-				self.pushThumbnail({ isQueued: true, url: "#" });
+				self.pushThumbnail({ isQueued: true, url: '#' });
 				self.forceUpdate();
 			}
 		});
@@ -145,14 +146,13 @@ module.exports = Field.create({
 
 	renderToolbar: function() {
 		var body = [];
-		var self = this;
 
 		var push = function (queueType, alertType, count, action) {
 			if (count <= 0) return;
 
 			var imageText = count === 1 ? 'image' : 'images';
 
-			body.push(<div key={queueType + "-toolbar"} className={queueType + '-queued' + ' pull-left'}>
+			body.push(<div key={queueType + '-toolbar'} className={queueType + '-queued' + ' pull-left'}>
 				<div className={'alert alert-' + alertType}>{count} {imageText} {action} - save to confirm</div>
 			</div>);
 		};
@@ -194,9 +194,11 @@ module.exports = Field.create({
 	},
 
 	renderContainer: function() {
-		return <div className='images-container clearfix'>
-			{this.state.thumbnails}
-		</div>;
+		return (
+			<div className='images-container clearfix'>
+				{this.state.thumbnails}
+			</div>
+		);
 	},
 
 	renderFieldAction: function() {
@@ -207,11 +209,11 @@ module.exports = Field.create({
 		});
 		if (remove.length) value = 'remove:' + remove.join(',');
 
-		return <input ref='action' className='field-action' type='hidden' value={value} name={this.props.paths.action} /> ;
+		return <input ref='action' className='field-action' type='hidden' value={value} name={this.props.paths.action} />;
 	},
 
 	renderUploadsField: function() {
-		return <input ref='uploads' className='field-uploads' type='hidden' name={this.props.paths.uploads} /> ;
+		return <input ref='uploads' className='field-uploads' type='hidden' name={this.props.paths.uploads} />;
 	},
 
 	renderUI: function() {

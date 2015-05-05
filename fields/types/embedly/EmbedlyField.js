@@ -3,6 +3,8 @@ var React = require('react'),
 
 module.exports = Field.create({
 	
+	displayName: 'EmbedlyField',
+	
 	// always defers to renderValue; there is no form UI for this field
 	renderField: function() {
 		return this.renderValue();
@@ -39,7 +41,7 @@ module.exports = Field.create({
 		// 			a(href=item.get(field.paths.url), rel=field.path).img-thumbnail
 		// 				img(width=item.get(field.paths.thumbnailWidth), height=item.get(field.paths.thumbnailHeight), src=item.get(field.paths.thumbnailUrl))
 		
-		return <div className="field-value">{this.props.value}</div>;
+		//return <div className="field-value">{this.props.value}</div>;
 		
 	}
 	

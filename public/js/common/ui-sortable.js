@@ -1,4 +1,5 @@
 jQuery(function($) {
+	/*global move*/
 	
 	// SORTABLE CLASS
 	// ==============
@@ -7,7 +8,7 @@ jQuery(function($) {
 		this.table = table;
 		this.$table = $(table);
 		this.drag = null;
-	}
+	};
 	
 	Sortable.prototype.start = function($row, startEvent) {
 		
@@ -30,8 +31,9 @@ jQuery(function($) {
 			var rowIndex = $row.index(),
 				rowHit = self.getRowHit(e);
 			
-			if (rowHit == -1 || rowHit == rowIndex)
+			if (rowHit == -1 || rowHit == rowIndex) {// eslint-disable-line eqeqeq
 				return;
+			}
 			
 			var pos = rowHit < rowIndex ? 'Before' : 'After';
 			
@@ -43,7 +45,7 @@ jQuery(function($) {
 			
 		};
 		
-		var finish = function(e) {
+		var finish = function(e) {// eslint-disable-line no-unused-vars
 			
 			$row.removeClass('dragged');
 			$blocker.remove();

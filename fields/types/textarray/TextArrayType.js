@@ -3,7 +3,6 @@
  */
 
 var util = require('util'),
-	utils = require('keystone-utils'),
 	super_ = require('../Type');
 
 /**
@@ -41,7 +40,7 @@ textarray.prototype.validateInput = function(data, required, item) {
 			return false;
 		}
 		if (Array.isArray(value) && !value.length) {
-			return false
+			return false;
 		}
 	}
 	return (value === undefined || Array.isArray(value) || ('string' === typeof value) || ('number' === typeof value));

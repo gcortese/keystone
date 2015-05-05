@@ -3,6 +3,8 @@ var React = require('react'),
 
 module.exports = Field.create({
 	
+	displayName: 'ColorField',
+	
 	valueChanged: function(event) {
 		var newValue = event.target.value;
 		if (/^([0-9A-F]{3}){1,2}$/.test(newValue)) {
@@ -21,15 +23,17 @@ module.exports = Field.create({
 		var colorPreview = null;
 		
 		if (this.props.value) {
-			colorPreview = <div style={{
-				position: 'absolute',
-				top: 5,
-				right: 20,
-				width: 24,
-				height: 24,
-				borderRadius: 5,
-				background: this.props.value
-			}} />;
+			colorPreview = (
+				<div style={{
+					position: 'absolute',
+					top: 5,
+					right: 20,
+					width: 24,
+					height: 24,
+					borderRadius: 5,
+					background: this.props.value
+				}} />
+			);
 		}
 		
 		return (

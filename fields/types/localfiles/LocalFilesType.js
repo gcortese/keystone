@@ -10,7 +10,8 @@ var fs = require('fs-extra'),
 	util = require('util'),
 	utils = require('keystone-utils'),
 	super_ = require('../Type'),
-	async = require('async');
+	async = require('async'),
+	grappling = require('grappling-hook');
 
 /**
  * localfiles FieldType Constructor
@@ -19,18 +20,10 @@ var fs = require('fs-extra'),
  */
 
 function localfiles(list, path, options) {
-	
+	grappling.mixin(this)
+		.allowHooks('move');
 	this._underscoreMethods = ['format', 'uploadFiles'];
 	this._fixedSize = 'full';
-
-	// event queues
-	this._pre = {
-		move: [] // Before file is moved into final destination
-	};
-
-	this._post = {
-		move: [] // After file is moved into final destination
-	};
 
 	// TODO: implement filtering, usage disabled for now
 	options.nofilter = true;
@@ -55,11 +48,11 @@ function localfiles(list, path, options) {
 
 	// Allow hook into before and after
 	if (options.pre && options.pre.move) {
-		this._pre.move = this._pre.move.concat(options.pre.move);
+		this.pre('move', options.pre.move);
 	}
 
 	if (options.post && options.post.move) {
-		this._post.move = this._post.move.concat(options.post.move);
+		this.post('move', options.post.move);
 	}
 	
 }
@@ -69,38 +62,6 @@ function localfiles(list, path, options) {
  */
 
 util.inherits(localfiles, super_);
-
-
-/**
- * Allows you to add pre middleware after the field has been initialised
- *
- * @api public
- */
-
-localfiles.prototype.pre = function(event, fn) {
-	if (!this._pre[event]) {
-		throw new Error('localfiles (' + this.list.key + '.' + this.path + ') error: localfiles.pre()\n\n' +
-			'Event ' + event + ' is not supported.\n');
-	}
-	this._pre[event].push(fn);
-	return this;
-};
-
-
-/**
- * Allows you to add post middleware after the field has been initialised
- *
- * @api public
- */
-
-localfiles.prototype.post = function(event, fn) {
-	if (!this._post[event]) {
-		throw new Error('localfiles (' + this.list.key + '.' + this.path + ') error: localfiles.post()\n\n' +
-			'Event ' + event + ' is not supported.\n');
-	}
-	this._post[event].push(fn);
-	return this;
-};
 
 
 /**
@@ -125,7 +86,7 @@ localfiles.prototype.addToSchema = function() {
 		exists:			this._path.append('.exists'),
 		upload:			this._path.append('_upload'),
 		action:			this._path.append('_action'),
-		order: 			this._path.append('_order'),
+		order: 			this._path.append('_order')
 	};
 
 	var schemaPaths = new mongoose.Schema({
@@ -177,7 +138,7 @@ localfiles.prototype.addToSchema = function() {
 		} else {
 			var values = item.get(field.path);
 			var value = _.findWhere(values, { 'id': element_id });
-			if (typeof(value !== 'undefined')) {
+			if (typeof value !== 'undefined') {
 				values.splice(values.indexOf(value), 1);
 			}
 		}
@@ -287,7 +248,7 @@ localfiles.prototype.isModified = function(item) {
  * @api public
  */
 
-localfiles.prototype.validateInput = function(data) {
+localfiles.prototype.validateInput = function(data) {//eslint-disable-line no-unused-vars
 	// TODO - how should file field input be validated?
 	return true;
 };
@@ -299,7 +260,7 @@ localfiles.prototype.validateInput = function(data) {
  * @api public
  */
 
-localfiles.prototype.updateItem = function(item, data) {
+localfiles.prototype.updateItem = function(item, data) {//eslint-disable-line no-unused-vars
 	// TODO - direct updating of data (not via upload)
 };
 
@@ -354,17 +315,12 @@ localfiles.prototype.uploadFiles = function(item, files, update, callback) {
 			
 		};
 		
-		async.eachSeries(field._pre.move, function(fn, next) {
-			fn(item, file, next);
-		}, function(err) {
+		field.callHook('pre:move', [item, file], function(err) {
 			if (err) return processedFile(err);
 			
 			doMove(function(err, fileData) {
 				if (err) return processedFile(err);
-				
-				async.eachSeries(field._post.move, function(fn, next) {
-					fn(item, file, fileData, next);
-				}, function(err) {
+				field.callHook('post:move', [item, file, fileData], function(err) {
 					return processedFile(err, fileData);
 				});
 			});

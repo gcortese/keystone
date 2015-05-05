@@ -1,0 +1,7 @@
+docs/*
+public/js/lib/*
+public/js/packages.js
+test/*
+node_modules/*
+coverage/*
+fields/types/**/lib/*

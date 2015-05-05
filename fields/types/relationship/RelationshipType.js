@@ -158,14 +158,10 @@ relationship.prototype.updateItem = function(item, data) {
 
 		_new = _.compact(_new);
 
-		// remove ids
-		_.difference(_old, _new).forEach(function(val) {
-			arr.pull(val);
-		});
-		// add new ids
-		_.difference(_new, _old).forEach(function(val) {
-			arr.push(val);
-		});
+		// Only update if the lists aren't the same
+		if (!_.isEqual(_old, _new)) {
+			item.set(this.path, _new);
+		}
 
 	} else {
 		if (data[this.path]) {
@@ -233,7 +229,7 @@ relationship.prototype.addFilters = function(query, item) {
 		}
 		query.where(path);
 		_.each(filters, function(value, method) {
-			if ('string' === typeof value && value.substr(0,1) === ':') {
+			if ('string' === typeof value && value.substr(0, 1) === ':') {
 				if (!item) {
 					return;
 				}

@@ -4,17 +4,16 @@ include ../mixins/columns
 
 block css
 	if list.fieldTypes.code
-		link(rel="stylesheet", href="/keystone/js/lib/codemirror/codemirror.css")
+		link(rel='stylesheet', href='/keystone/js/lib/codemirror/codemirror.css')
 
 block js
 	script.
 		Keystone.list = !{JSON.stringify(list.getOptions())};
-		Keystone.item = !{JSON.stringify(list.getData(item))};
-		Keystone.drilldown = !{JSON.stringify(drilldown)};
 		Keystone.wysiwyg = { options: !{JSON.stringify(wysiwygOptions)} };
+		Keystone.itemId = '!{item.id}';
 		Keystone.user = !{JSON.stringify(user)};
-		
-		App.Views.Item.render();
+	script(src='/keystone/js/packages.js')
+	script(src='/keystone/js/item.js')
 		
 block content
 	// Attach point for new React View

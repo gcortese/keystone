@@ -22,7 +22,7 @@ function datetime(list, path, options) {
 	this._properties = ['formatString'];
 	
 	this.typeDescription = 'date and time';
-	this.formatString = (options.format === false) ? false : (options.format || 'Do MMM YYYY');
+	this.formatString = (options.format === false) ? false : (options.format || 'YYYY-MM-DD h:m:s a');
 	
 	if (this.formatString && 'string' !== typeof this.formatString) {
 		throw new Error('FieldType.DateTime: options.format must be a string.');
@@ -130,8 +130,9 @@ datetime.prototype.validateInput = function(data, required, item) {
 
 datetime.prototype.updateItem = function(item, data) {
 
-	if (!(this.path in data || (this.paths.date in data && this.paths.time in data)))
+	if (!(this.path in data || (this.paths.date in data && this.paths.time in data))) {
 		return;
+	}
 
 	var newValue = moment(this.getInputFromData(data), parseFormats);
 

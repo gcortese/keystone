@@ -1,26 +1,34 @@
-var cloudinary = require('cloudinary');
+var cloudinary = require('cloudinary'),
+	keystone = require('../../');
 
 exports = module.exports = {
 
-
-	/**
-	 * Upload Cloudinary Image
-	 * @param  {[type]} req [description]
-	 * @param  {[type]} res [description]
-	 * @return {[type]}     [description]
-	 */
 	upload: function(req, res) {
 		if(req.files && req.files.file){
-			cloudinary.uploader.upload(req.files.file.path, function(result) { 
+			var options = {};
 
-				if (result.error) {
-					res.send('{"error":{"message":"' + result.error.message + '"}}');
-				} else {
-					res.send('{"image":{"url":"' + result.url + '"}}');
-				}
-			});
+			if (keystone.get('wysiwyg cloudinary images filenameAsPublicID')) {
+				options.public_id = req.files.file.originalname.substring(0, req.files.file.originalname.lastIndexOf('.'));
+			}
+
+			cloudinary.uploader.upload(req.files.file.path, function(result) {
+				var sendResult = function () {
+					if (result.error) {
+						res.send({ error: { message: result.error.message } });
+					} else {
+						res.send({ image: { url: result.url } });
+					}
+				};
+				
+				// TinyMCE upload plugin uses the iframe transport technique
+				// so the response type must be text/html
+				res.format({
+					html: sendResult,
+					json: sendResult
+				});
+			}, options);
 		} else {
-			res.send('{"error":{"message":"No image selected"}}');
+			res.json({ error: { message: 'No image selected' } });
 		}
 	},
 
@@ -31,7 +39,7 @@ exports = module.exports = {
 
 		cloudinary.api.resources(function(result) {
 			if (result.error) {
-				res.send('{"error":{"message":"' + result.error.message + '"}}');
+				res.json({ error: { message: result.error.message } });
 			} else {
 				res.json({
 					next: result.next_cursor,
@@ -49,7 +57,7 @@ exports = module.exports = {
 	get: function(req, res) {
 		cloudinary.api.resource(req.query.id, function(result) {
 			if (result.error) {
-				res.send('{"error":{"message":"' + result.error.message + '"}}');
+				res.json({ error: { message: result.error.message } });
 			} else {
 				res.json({ item: result });	
 			}

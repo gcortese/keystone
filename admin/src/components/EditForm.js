@@ -35,8 +35,7 @@ var EditForm = React.createClass({
 	
 	renderNameField: function() {
 		
-		var namePath = this.props.list.namePath,
-			nameField = this.props.list.nameField,
+		var nameField = this.props.list.nameField,
 			nameIsEditable = this.props.list.nameIsEditable;
 		
 		function wrapNameField(field) {
@@ -60,15 +59,9 @@ var EditForm = React.createClass({
 				React.createElement(Fields[nameField.type], nameFieldProps)
 			);
 			
-		} else if (nameField && nameField.type == 'name') {
-			var nameValue = this.props.data.fields[nameField.path] || {};
-			nameValue = _.compact([nameValue.first, nameValue.last]).join(' ');
-			return wrapNameField(
-				<h2 className="form-heading name-value">{nameValue || '(no name)'}</h2>
-			);
 		} else {
 			return wrapNameField(
-				<h2 className="form-heading name-value">{this.props.data.fields[namePath] || '(no name)'}</h2>
+				<h2 className="form-heading name-value">{this.props.data.name || '(no name)'}</h2>
 			);
 		}
 	},
@@ -151,14 +144,23 @@ var EditForm = React.createClass({
 				
 			} else if (el.type === 'field') {
 				
-				var field = this.props.list.fields[el.field];
-				
+				var field = this.props.list.fields[el.field],
+					props = this.getFieldProps(field);
+
+
 				if ('function' !== typeof Fields[field.type]) {
 					elements[field.path] = React.createElement(InvalidFieldType, { type: field.type, path: field.path });
 					return;
 				}
-				
-				elements[field.path] = React.createElement(Fields[field.type], this.getFieldProps(field));
+
+				if (props.dependsOn) {
+					props.currentDependencies = {};
+					Object.keys(props.dependsOn).forEach(function (dep) {
+						props.currentDependencies[dep] = this.state.values[dep];
+					}, this);
+				}
+
+				elements[field.path] = React.createElement(Fields[field.type], props);
 				
 			}
 			
@@ -175,16 +177,16 @@ var EditForm = React.createClass({
 		if (!this.props.list.noedit) {
 			toolbar.save = <button type="submit" className="btn btn-save">Save</button>;
 			// TODO: Confirm: Use React & Modal
-			toolbar.reset = <a href={'/keystone/' + this.props.list.path + '/' + this.props.data.id} className="btn btn-link btn-cancel"  data-confirm="Are you sure you want to reset your changes?">reset changes</a>;
+			toolbar.reset = <a href={'/keystone/' + this.props.list.path + '/' + this.props.data.id} className="btn btn-link btn-cancel" data-confirm="Are you sure you want to reset your changes?">reset changes</a>;
 		}
 		
 		if (!this.props.list.noedit && !this.props.list.nodelete) {
 			// TODO: Confirm: Use React & Modal
-			toolbar.del = <a href={'/keystone/' + this.props.list.path + '?delete=' + this.props.data.id + Keystone.csrf.query} className="btn btn-link btn-cancel delete" data-confirm={"Are you sure you want to delete this " + this.props.list.singular.toLowerCase()}>delete {this.props.list.singular.toLowerCase()}</a>;
+			toolbar.del = <a href={'/keystone/' + this.props.list.path + '?delete=' + this.props.data.id + Keystone.csrf.query} className="btn btn-link btn-cancel delete" data-confirm={'Are you sure you want to delete this?' + this.props.list.singular.toLowerCase()}>delete {this.props.list.singular.toLowerCase()}</a>;
 		}
 		
 		return (
-			<Toolbar>
+			<Toolbar className="toolbar">
 				{toolbar}
 			</Toolbar>
 		);

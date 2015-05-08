@@ -61,8 +61,29 @@ exports = module.exports = function(req, res) {
 				if (!field) return sendError('invalid field provided');
 
 				_.each(req.query.filters, function(value, key) {
-					query.where(key).equals(value ? value : null);
-					count.where(key).equals(value ? value : null);
+					
+					var arrayFilters = JSON.stringify(req.query.filters);//FABRIZIO
+					
+					if (arrayFilters.indexOf(',') > -1)//caso in cui campo filters del field sia array x es filters: {type: ['document', 'file', 'archive']} -> req.query.filters = {"type":"document,file,archive"}
+					{
+						var before = arrayFilters.split(":");
+						before = before[1].replace('"','');
+						before = before.replace('"','');
+						before = before.replace('}','');
+						//console.log("before: " + before);
+						
+						var or = before.split(",");
+						//console.log("or----------" + or[0] + " " + or[1]);
+						
+						query.where(key).in(or);//query: check if {key} field (x es type) has one value of the array {or} as value x es query.where('tags').in(['game', 'fun', 'holiday'])
+						count.where(key).in(or);
+					}
+					else {
+						query.where(key).equals(value ? value : null);
+						count.where(key).equals(value ? value : null);
+					}//FABRIZIO
+					//query.where(key).equals(value ? value : null);
+					//count.where(key).equals(value ? value : null);
 				});
 			}
 			

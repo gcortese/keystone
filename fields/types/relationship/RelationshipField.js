@@ -201,7 +201,7 @@ module.exports = Field.create({
 		{
 			body.push(
 					<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item' target='_blank'>
-						create new {this.props.refList.singular.toLowerCase()} (in a new tab)
+						create new {this.props.label.toLowerCase()} (in a new tab)
 					</a>
 			);
 		}

@@ -15,8 +15,8 @@ module.exports = Field.create({
 	getInitialState: function() {
 		return {
 			collapsedFields: {},
-			improve: false,
-			overwrite: false
+			improve: true,
+			overwrite: true
 		};
 	},
 	
@@ -24,7 +24,7 @@ module.exports = Field.create({
 		
 		var collapsedFields = {};
 		
-		_.each(['number', 'name', 'street2', 'geo'], function(i) {
+		_.each(['region','geo'], function(i) {
 			if (!this.props.value[i]) {
 				collapsedFields[i] = true;
 			}
@@ -75,13 +75,14 @@ module.exports = Field.create({
 	
 	formatValue: function() {
 		return _.compact([
-			this.props.value.number,
-			this.props.value.name,
-			this.props.value.street1,
-			this.props.value.street2,
-			//this.props.value.suburb,
-			this.props.value.state,
+			//this.props.value.number,
+			//this.props.value.name,
+			this.props.value.street,
+			//this.props.value.street2,
+			this.props.value.city,
+			this.props.value.province,
 			this.props.value.postcode,
+			this.props.value.region,
 			this.props.value.country
 		]).join(', ');
 	},
@@ -109,18 +110,18 @@ module.exports = Field.create({
 		
 	},
 	
-	renderStateAndPostcode: function() {
+	renderPostcodeAndProvince: function() {
 		return (
 			<div className="row">
 				<div className="col-sm-2 location-field-label">
-					<label className="text-muted">State/Postcode</label>
+					<label className="text-muted">Zipcode - Province</label>
 				</div>
 				<div className="col-sm-10 col-md-7 col-lg-6 location-field-controls"><div className="form-row">
 					<div className="col-xs-6">
-						<input type="text" name={this.props.path + '.state'} ref="state" value={this.props.value.state} onChange={this.fieldChanged.bind(this, 'state')} className="form-control" placeholder="State" />
+						<input type="text" name={this.props.path + '.postcode'} ref="postcode" value={this.props.value.postcode} onChange={this.fieldChanged.bind(this, 'postcode')} className="form-control" placeholder="Zipcode" />
 					</div>
 					<div className="col-xs-6">
-						<input type="text" name={this.props.path + '.postcode'} ref="postcode" value={this.props.value.postcode} onChange={this.fieldChanged.bind(this, 'postcode')} className="form-control" placeholder="Postcode" />
+						<input type="text" name={this.props.path + '.province'} ref="state" value={this.props.value.province} onChange={this.fieldChanged.bind(this, 'province')} className="form-control" placeholder="Province" />
 					</div>
 				</div></div>
 			</div>
@@ -166,7 +167,7 @@ module.exports = Field.create({
 			</label>
 		) : null;
 		return (
-			<div className="row">
+			<div className="row hidden">
 				<div className="col-sm-9 col-md-10 col-sm-offset-3 col-md-offset-2 improve-options">
 					<label className="checkbox autoimprove" htmlFor={this.props.paths.improve} title="When checked, this will attempt to fill missing fields. It will also get the lat/long">
 						<input type="checkbox" name={this.props.paths.improve} id={this.props.paths.improve} value="true" onChange={this.updateGoogleOption.bind(this, 'improve')} checked={this.state.improve} />
@@ -202,12 +203,11 @@ module.exports = Field.create({
 				<div className="field-ui">
 					<label>{this.props.label}</label>
 					{showMore}
-					{this.renderField('number', 'PO Box / Shop', true)}
-					{this.renderField('name', 'Building Name', true)}
-					{this.renderField('street1', 'Street Address')}
-					{this.renderField('street2', 'Street Address 2', true)}
-					{this.renderStateAndPostcode()}
+					{this.renderField('street', 'Street Address')}
+					{this.renderField('city', 'City')}
+					{this.renderPostcodeAndProvince()}
 					{this.renderField('country', 'Country')}
+					{this.renderField('region', 'Region')}	
 					{this.renderGeo()}
 					{this.renderGoogleOptions()}
 					<Note note={this.props.note} />

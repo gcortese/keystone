@@ -24,7 +24,7 @@ function location(list, path, options) {
 	this._underscoreMethods = ['format', 'googleLookup', 'kmFrom', 'milesFrom'];
 	this._fixedSize = 'full';
 
-	this.enableMapsAPI = keystone.get('google api key') ? true : false;
+	this.enableMapsAPI = keystone.get('google server api key') ? true : false;//keystone.get('google api key') ? true : false; //FABRIZIO
 
 	this._properties = ['enableMapsAPI'];
 
@@ -315,7 +315,8 @@ location.prototype.getRequestHandler = function(item, req, paths, callback) {
 	return function() {
 
 		var update = req.body[paths.overwrite] ? 'overwrite' : true;
-
+		
+		//console.log(" getRequestHandler LocationType ===================" + JSON.stringify(req.body));
 		if (req.body && req.body[paths.improve]) {
 			field.googleLookup(item, false, update, function() {
 				callback();
@@ -356,6 +357,7 @@ function doGoogleGeocodeRequest(address, region, callback) {
 	var options = {
 		sensor: false,
 		language: 'en',
+		key: keystone.get('google server api key'),// key added as parameter; Enables per-key instead of per-IP-address quota limits (calls to Google Service via application API, not per IP), see https://developers.google.com/maps/documentation/geocoding/#api_key
 		address: address
 	};
 
@@ -367,7 +369,7 @@ function doGoogleGeocodeRequest(address, region, callback) {
 	if (region) {
 		options.region = region;
 	}
-
+	console.log(" GEOCODING options ===================" + JSON.stringify(options));
 	var endpoint = 'https://maps.googleapis.com/maps/api/geocode/json?' + querystring.stringify(options);
 
 	https.get(endpoint, function(res) {
@@ -379,6 +381,8 @@ function doGoogleGeocodeRequest(address, region, callback) {
 				var dataBuff = data.join('').trim();
 				var result;
 				try {
+					//console.log(dataBuff);
+					console.log("GEOCODING REQUEST ========================");
 					result = JSON.parse(dataBuff);
 				}
 				catch (exp) {

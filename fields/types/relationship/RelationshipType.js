@@ -44,7 +44,8 @@ relationship.prototype.getProperties = function () {
 		refList: {
 			singular: refList.singular,
 			plural:   refList.plural,
-			path:     refList.path
+			path:     refList.path,
+			owner:	refList.owner //FABRIZIO
 		}
 	};
 };
@@ -70,7 +71,7 @@ relationship.prototype.addToSchema = function() {
 		index: (this.options.index ? true : false),
 		required: (this.options.required ? true : false),
 		unique: (this.options.unique ? true : false),
-		userNoEdit: (this.options.userNoEdit ? true : false)//FABRIZIO
+		userNoEdit: (this.options.userNoEdit ? true : false),
 	};
 
 	schema.path(this.path, this.many ? [def] : def);

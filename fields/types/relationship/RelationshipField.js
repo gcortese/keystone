@@ -189,15 +189,16 @@ module.exports = Field.create({
 					  
 		}
 		//FABRIZIO
+		//console.log("OWNER: " + this.props.refList.owner + " " + Keystone.user.role);
 		//if (!this.props.many && this.props.value) {//FABRIZIO
-		if (!this.props.many && this.props.value && (!this.props.userNoEdit || Keystone.user.isAdmin)) {
+		if (!this.props.many && this.props.value && ( Keystone.user.isAdmin || this.props.refList.owner == Keystone.user.role)) {
 			body.push(
 				<a href={'/keystone/' + this.props.refList.path + '/' + this.props.value} className='btn btn-link btn-goto-linked-item'>
 					view {this.props.refList.singular.toLowerCase()}
 				</a>
 			);
 		}
-		else if (this.props.many && !this.props.userNoEdit) //FABRIZIO(aggiunto else)
+		else if (this.props.many && !this.props.userNoEdit && this.props.refList.owner == Keystone.user.role) //FABRIZIO(aggiunto else)
 		{
 			body.push(
 					<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item' target='_blank'>

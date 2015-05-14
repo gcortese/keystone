@@ -225,6 +225,7 @@ jQuery(function($) {
 						break;
 					
 					case 'location':
+					case 'EUlocation':
 						value = [];
 						$filter.find('input[type=text]').each(function() {
 							value.push($(this).val());

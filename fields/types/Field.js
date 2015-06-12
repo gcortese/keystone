@@ -63,15 +63,36 @@ var Base = module.exports.Base = {
 	renderUI: function(spec) {//eslint-disable-line no-unused-vars
 		var wrapperClassName = cx('field', 'field-type-' + this.props.type, this.props.className, { 'field-has-label': this.props.label });
 		var fieldClassName = cx('field-ui', 'field-size-' + this.props.size);
-		return (
-			<div className={wrapperClassName}>
-				{this.renderLabel()}
-				<div className={fieldClassName}>
-					{this.shouldRenderField() ? this.renderField() : this.renderValue()}
-					{this.renderNote()}
+		
+		//FABRIZIO
+		//nascondo campo contenente proprietario della lista, se utente non admin ( lo trovo con proprietario lista == nome campo)
+		if(this.props.type == 'relationship' && !Keystone.user.isAdmin && Keystone.list.owner == this.props.path)//FABRIZIO, aggiunto if else (prima solo contenuto di else)
+		{
+			console.log("hidden campo proprietario della lista se non admin!");
+			//console.log("hidden campo proprietario della lista se non admin: " + Keystone.list.owner + this.props.path + Keystone.user.role);
+			wrapperClassName = cx('field', 'field-type-' + this.props.type, this.props.className, { 'field-has-label': this.props.label }, 'hidden');
+			return (
+				<div className={wrapperClassName}>
+					{this.renderLabel()}
+					<div className={fieldClassName}>
+						{this.shouldRenderField() ? this.renderField() : this.renderValue()}
+						{this.renderNote()}
+					</div>
 				</div>
-			</div>
-		);
+			);
+		}
+		else
+		{
+			return (
+				<div className={wrapperClassName} >
+					{this.renderLabel()}
+					<div className={fieldClassName}>
+						{this.shouldRenderField() ? this.renderField() : this.renderValue()}
+						{this.renderNote()}
+					</div>
+				</div>
+			);
+		}
 		
 	}
 	

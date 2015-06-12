@@ -178,12 +178,13 @@ module.exports = Field.create({
 		
 		//body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
 		
-		//FABRIZIO
+		//FABRIZIO 
+		//x Select: se non Admin e campo userNoEdit aggiunta classe disabled
 		if (this.props.userNoEdit && Keystone.user && !Keystone.user.isAdmin)
 		{
 			body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} disabled={this.props.userNoEdit} class='disabled'/>);
 		}
-		else
+		else 
 		{
 			body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
 					  
@@ -191,6 +192,8 @@ module.exports = Field.create({
 		//FABRIZIO
 		//console.log("OWNER: " + this.props.refList.owner + " " + Keystone.user.role);
 		//if (!this.props.many && this.props.value) {//FABRIZIO
+					  
+		//x link a fianco della select: se Admin oppure utente ha ruolo proprietario della lista lascia link 'view detail'
 		if (!this.props.many && this.props.value && ( Keystone.user.isAdmin || this.props.refList.owner == Keystone.user.role)) {
 			body.push(
 				<a href={'/keystone/' + this.props.refList.path + '/' + this.props.value} className='btn btn-link btn-goto-linked-item'>
@@ -198,6 +201,7 @@ module.exports = Field.create({
 				</a>
 			);
 		}
+		//se utente ha ruolo proprietario della lista crea link 'crea nuovo', solo se relazione multipla
 		else if (this.props.many && !this.props.userNoEdit && this.props.refList.owner == Keystone.user.role) //FABRIZIO(aggiunto else)
 		{
 			body.push(

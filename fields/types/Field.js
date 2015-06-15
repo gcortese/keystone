@@ -68,16 +68,21 @@ var Base = module.exports.Base = {
 		//nascondo campo contenente proprietario della lista, se utente non admin ( lo trovo con proprietario lista == nome campo)
 		if(this.props.type == 'relationship' && !Keystone.user.isAdmin && Keystone.list.owner == this.props.path)//FABRIZIO, aggiunto if else (prima solo contenuto di else)
 		{
-			console.log("hidden campo proprietario della lista se non admin!");
+			console.log("hidden campo proprietario della lista se non admin!");//non solo aggiunta classe hidden, torno proprio div vuoto!
 			//console.log("hidden campo proprietario della lista se non admin: " + Keystone.list.owner + this.props.path + Keystone.user.role);
-			wrapperClassName = cx('field', 'field-type-' + this.props.type, this.props.className, { 'field-has-label': this.props.label }, 'hidden');
-			return (
-				<div className={wrapperClassName}>
-					{this.renderLabel()}
-					<div className={fieldClassName}>
-						{this.shouldRenderField() ? this.renderField() : this.renderValue()}
-						{this.renderNote()}
-					</div>
+			//wrapperClassName = cx('field', 'field-type-' + this.props.type, this.props.className, { 'field-has-label': this.props.label }, 'hidden');
+			
+//			return (
+//				<div className={wrapperClassName}>
+//					{this.renderLabel()}
+//					<div className={fieldClassName}>
+//						{this.shouldRenderField() ? this.renderField() : this.renderValue()}
+//						{this.renderNote()}
+//					</div>
+//				</div>
+//			);
+			return(
+				<div>
 				</div>
 			);
 		}

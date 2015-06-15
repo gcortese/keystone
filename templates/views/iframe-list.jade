@@ -193,7 +193,7 @@ block content
 									ul.dropdown-menu: each el in list.uiElements
 										if el.type == 'heading'
 											li.dropdown-header= el.heading
-										else if el.type == 'field' && !el.field.nofilter && !el.field.hidden
+										else if el.type == 'field' && !el.field.nofilter && !el.field.hidden && (list.owner != el.field.path )
 											li: a(href=js, data-path=el.field.path).add-list-filter
 												span(class='fieldicon fieldicon-' + el.field.type)
 												span= el.field.label
@@ -238,7 +238,7 @@ block content
 				//- ------------------------------
 				.list-filters
 					each field in list.fields
-						if !field.nofilter && !field.hidden
+						if !field.nofilter && !field.hidden && (list.owner != field.path )
 							.filter(data-path=field.path, data-type=field.type, class=filters[field.path] ? 'active' : '')
 								.filter-label
 									a(href=js, title='Remove filter', data-toggle='tooltip', data-placement='right', data-container='body').btn-companion-xs.clear-filter &times;

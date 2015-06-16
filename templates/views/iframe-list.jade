@@ -238,6 +238,8 @@ block content
 				//- ------------------------------
 				.list-filters
 					each field in list.fields
+						//- FABRIZIO
+						//- if !field.nofilter && !field.hidden
 						if !field.nofilter && !field.hidden && (list.owner != field.path )
 							.filter(data-path=field.path, data-type=field.type, class=filters[field.path] ? 'active' : '')
 								.filter-label

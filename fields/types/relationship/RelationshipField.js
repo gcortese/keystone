@@ -202,14 +202,14 @@ module.exports = Field.create({
 			);
 		}
 		//se utente ha ruolo proprietario della lista crea link 'crea nuovo', solo se relazione multipla
-		else if (this.props.many && !this.props.userNoEdit && this.props.refList.owner == Keystone.user.role) //FABRIZIO(aggiunto else)
-		{
-			body.push(
-					<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item' target='_blank'>
-						create new {this.props.label.toLowerCase()} (in a new tab)
-					</a>
-			);
-		}
+//		else if (this.props.many && !this.props.userNoEdit && this.props.refList.owner == Keystone.user.role) //FABRIZIO(aggiunto else)
+//		{
+//			body.push(
+//					<a href={'/keystone/' + this.props.refList.path } className='btn btn-link btn-goto-linked-item' target='_blank'>
+//						create new {this.props.label.toLowerCase()} (in a new tab)
+//					</a>
+//			);
+//		}
 		
 		return body;
 	}

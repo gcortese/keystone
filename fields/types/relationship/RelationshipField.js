@@ -193,8 +193,9 @@ module.exports = Field.create({
 		//console.log("OWNER: " + this.props.refList.owner + " " + Keystone.user.role);
 		//if (!this.props.many && this.props.value) {//FABRIZIO
 					  
-		//x link a fianco della select: se Admin oppure utente ha ruolo proprietario della lista lascia link 'view detail'
-		if (!this.props.many && this.props.value && ( Keystone.user.isAdmin || this.props.refList.owner == Keystone.user.role)) {
+		//x link a fianco della select: se Admin (oppure utente ha ruolo proprietario della lista lascia link 'view detail')
+		//if (!this.props.many && this.props.value && ( Keystone.user.isAdmin || this.props.refList.owner == Keystone.user.role)) {
+		if (!this.props.many && this.props.value && ( Keystone.user.isAdmin )) {
 			body.push(
 				<a href={'/keystone/' + this.props.refList.path + '/' + this.props.value} className='btn btn-link btn-goto-linked-item'>
 					view {this.props.refList.singular.toLowerCase()}

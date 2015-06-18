@@ -5,7 +5,9 @@ var keystone = require('../../'),
 exports = module.exports = function(req, res) {
 	
 	//var itemQuery = req.list.model.findById(req.params.item);
-	var itemQuery;
+	var itemQuery,
+		isCustomView = req.query.custom,
+		customView;
 	//FABRIZIO
 	if (req.list.get('owner') && !req.user.isAdmin)
 	{
@@ -86,7 +88,13 @@ exports = module.exports = function(req, res) {
 					section = 'dashboard';
 				}
 				
-				keystone.render(req, res, 'item', _.extend(viewLocals, {
+				customView = 'item';//FABRIZIO
+				if (isCustomView)
+				{
+					customView = 'itemCustom';
+				}
+				
+				keystone.render(req, res, customView, _.extend(viewLocals, {
 					section: section,
 					subSection: req.list.path,
 					//title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),

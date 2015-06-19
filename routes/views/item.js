@@ -123,7 +123,16 @@ exports = module.exports = function(req, res) {
 					return renderView();
 				}
 				req.flash('success', 'Your changes have been saved.');
-				return res.redirect('/keystone/' + req.list.path + '/' + item.id);
+				
+				//FABRIZIO aggiunto if
+				if (req.query.custom)
+				{
+					return res.redirect('/keystone/' + req.list.path + '/' + item.id + '?custom=true');
+				}
+				else 
+				{
+					return res.redirect('/keystone/' + req.list.path + '/' + item.id);
+				}
 			});
 			
 			

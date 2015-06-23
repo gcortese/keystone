@@ -159,10 +159,19 @@ module.exports = Field.create({
 		// Todo: this is only a temporary fix, remodel
 		if (this.state.expandedValues && this.state.expandedValues.length) {
 			var body = [];
-			
-			_.each(this.state.expandedValues, function (item) {
-				body.push(<a href={'/keystone/' + this.props.refList.path + '/' + item.value} className='related-item-link'>{item.label}</a>);
-			}, this);
+
+			if(Keystone.user && Keystone.user.isAdmin)
+			{
+				_.each(this.state.expandedValues, function (item) {
+					body.push(<a href={'/keystone/' + this.props.refList.path + '/' + item.value} className='related-item-link'>{item.label}</a>);
+				}, this);
+			}
+			else
+		    {
+			   _.each(this.state.expandedValues, function (item) {
+				body.push(<p className='related-item-link'>{item.label}</p>);
+				}, this);
+		    }
 			
 			return body;
 		} else {
@@ -179,7 +188,7 @@ module.exports = Field.create({
 		//body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
 		
 		//FABRIZIO 
-		//x Select: se non Admin e campo userNoEdit aggiunta classe disabled
+		//x Select: se non Admin e campo userNoEdit aggiunta classe disabled (ora mancano classi in css per renderlo disabled veramente)
 		if (this.props.userNoEdit && Keystone.user && !Keystone.user.isAdmin)
 		{
 			body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} disabled={this.props.userNoEdit} class='disabled'/>);

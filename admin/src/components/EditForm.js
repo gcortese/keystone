@@ -147,20 +147,29 @@ var EditForm = React.createClass({
 				var field = this.props.list.fields[el.field],
 					props = this.getFieldProps(field);
 
-
-				if ('function' !== typeof Fields[field.type]) {
-					elements[field.path] = React.createElement(InvalidFieldType, { type: field.type, path: field.path });
-					return;
+				//console.log("Field field and props: ", props.onlyForRole, Keystone.user.role);
+				//FABRIZIO, renderizzo i campi solo per i ruoli indicati in proprieta' del campo onlyForRole
+				if(props.onlyForRole && Keystone.user && props.onlyForRole.indexOf(Keystone.user.role) == -1)
+				{
+					console.log("Access Denied for", Keystone.user.role, props.onlyForRole.indexOf(Keystone.user.role));
+				    return;
 				}
+				else
+				{
+					if ('function' !== typeof Fields[field.type]) {
+						elements[field.path] = React.createElement(InvalidFieldType, { type: field.type, path: field.path });
+						return;
+					}
 
-				if (props.dependsOn) {
-					props.currentDependencies = {};
-					Object.keys(props.dependsOn).forEach(function (dep) {
-						props.currentDependencies[dep] = this.state.values[dep];
-					}, this);
+					if (props.dependsOn) {
+						props.currentDependencies = {};
+						Object.keys(props.dependsOn).forEach(function (dep) {
+							props.currentDependencies[dep] = this.state.values[dep];
+						}, this);
+					}
+
+					elements[field.path] = React.createElement(Fields[field.type], props);
 				}
-
-				elements[field.path] = React.createElement(Fields[field.type], props);
 				
 			}
 			

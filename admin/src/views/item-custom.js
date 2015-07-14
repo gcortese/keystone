@@ -49,7 +49,8 @@ var View = React.createClass({
 	render: function() {
 		if (!this.state.itemData) return <div />;
 		return (
-//			<div>
+			//chiamata ad item view con ?isCustom=true -> tolgo createForm e header e passo a editForm come dato un booleano nodelete, per togliere possibilita' di cancellare
+//			<div> 
 //				{this.renderCreateForm()}
 //				<Header list={this.state.list} data={this.state.itemData} drilldown={this.state.itemDrilldown} toggleCreate={this.toggleCreate} />
 //				<EditForm list={this.state.list} data={this.state.itemData} />

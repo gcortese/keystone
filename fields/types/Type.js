@@ -82,6 +82,7 @@ Field.prototype.getOptions = function() {
 			'col',
 			'noedit',
 			'userNoEdit',//FABRIZIO
+			'onlyForRole',//FABRIZIO
 			'nocol',
 			'nosort',
 			'nofilter',
@@ -225,6 +226,7 @@ Object.defineProperty(Field.prototype, 'col', { get: function() { return this.op
 Object.defineProperty(Field.prototype, 'noedit', { get: function() { return this.options.noedit || false; } });
 Object.defineProperty(Field.prototype, 'userNoEdit', { get: function() { return this.options.userNoEdit || false; } });//FABRIZIO
 Object.defineProperty(Field.prototype, 'autoCleanup', { get: function() { return this.options.autoCleanup || false; } });//FABRIZIO
+Object.defineProperty(Field.prototype, 'onlyForRole', { get: function() { return this.options.onlyForRole || false; } });//FABRIZIO
 Object.defineProperty(Field.prototype, 'nocol', { get: function() { return this.options.nocol || false; } });
 Object.defineProperty(Field.prototype, 'nosort', { get: function() { return this.options.nosort || false; } });
 Object.defineProperty(Field.prototype, 'nofilter', { get: function() { return this.options.nofilter || false; } });

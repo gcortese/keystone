@@ -1,5 +1,6 @@
 var React = require('react'),
-	Field = require('../Field');
+	Field = require('../Field'),
+	Note = require('../../components/Note');
 
 module.exports = Field.create({
 	
@@ -40,7 +41,10 @@ module.exports = Field.create({
 			);
 		}
 		
-		return <div className="field field-type-boolean">{input}</div>;
+		return <div className="field field-type-boolean">{input}
+					<Note note={this.props.note} />
+			
+			</div>;
 	}
 	
 });

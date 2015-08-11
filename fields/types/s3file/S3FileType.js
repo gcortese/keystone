@@ -405,6 +405,8 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
 
 			var protocol = (field.s3config.protocol && field.s3config.protocol + ':') || '',
 				url = res.req.url.replace(/^https?:/i, protocol);
+			
+			url = decodeURIComponent(url);//FABRIZIO: se filename ha spazi, viene codificato due volte (??), lo spazio viene codificato in %20, poi la % in %25%20
 
 			var fileData = {
 				filename: filename,

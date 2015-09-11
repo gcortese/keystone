@@ -25,8 +25,13 @@ block js
 		Keystone.itemId = '!{item.id}';
 		Keystone.user = !{JSON.stringify(user)};
 	script(src='/keystone/js/packages.js')
+	script(src='/keystone/js/fields.js')
 	script(src='/keystone/js/item-custom.js')
-		
+
+block js_codemirror
+	if list.fieldTypes.code
+		script(src="/keystone/js/lib/codemirror/codemirror-compressed.js")
+
 block content
 	br
 	.container

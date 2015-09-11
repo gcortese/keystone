@@ -1,12 +1,34 @@
 /*!
  * Module dependencies.
  */
+var _ = require('underscore');
+var di = require('asyncdi');
+var marked = require('marked');
+var Path = require('../../lib/path');
+var utils = require('keystone-utils');
 
-var _ = require('underscore'),
-	marked = require('marked'),
-	Path = require('../../lib/path'),
-	utils = require('keystone-utils'),
-	di = require('asyncdi');
+var DEFAULT_OPTION_KEYS = [
+	'path',
+	'paths',
+	'type',
+	'label',
+	'note',
+	'size',
+	'initial',
+	'required',
+	'col',
+	'noedit',
+	'userNoEdit',//FABRIZIO
+	'onlyForRole',//FABRIZIO
+	'nocol',
+	'nosort',
+	'nofilter',
+	'indent',
+	'hidden',
+	'collapse',
+	'dependsOn',
+	'autoCleanup'//FABRIZIO
+];
 
 /**
  * Field Constructor
@@ -16,7 +38,6 @@ var _ = require('underscore'),
  *
  * @api public
  */
-
 function Field(list, path, options) {
 
 	// Set field properties and options
@@ -54,86 +75,58 @@ function Field(list, path, options) {
 
 	// Convert notes from markdown to html
 	var note = null;
-	Object.defineProperty(this, 'note', { get: function() {
-		return (note === null) ? (note = (this.options.note) ? marked(this.options.note) : '') : note;
-	} });
+	Object.defineProperty(this, 'note', {
+		get: function() {
+			return (note === null) ? (note = (this.options.note) ? marked(this.options.note) : '') : note;
+		}
+	});
 
 }
 
 /**
  * Gets the options for the Field, as used by the React components
  */
-
 Field.prototype.getOptions = function() {
-	
 	if (!this.__options) {
-		
 		this.__options = {};
-		
-		var optionKeys = [
-			'path',
-			'paths',
-			'type',
-			'label',
-			'note',
-			'size',
-			'initial',
-			'required',
-			'col',
-			'noedit',
-			'userNoEdit',//FABRIZIO
-			'onlyForRole',//FABRIZIO
-			'nocol',
-			'nosort',
-			'nofilter',
-			'indent',
-			'hidden',
-			'collapse',
-			'dependsOn',
-			'autoCleanup'//FABRIZIO
-		];
-		
+		var optionKeys = DEFAULT_OPTION_KEYS;
 		if (_.isArray(this._properties)) {
 			optionKeys = optionKeys.concat(this._properties);
 		}
-		
 		optionKeys.forEach(function(key) {
 			if (this[key]) {
 				this.__options[key] = this[key];
+			} else if (this.options[key]){
+				this.__options[key] = this.options[key];
 			}
-		}.bind(this));
-
+		}, this);
 		if (this.getProperties) {
 			_.extend(this.__options, this.getProperties());
 		}
-		
+		this.__options.hasFilterMethod = this.addFilterToQuery ? true : false;
 		this.__options.defaultValue = this.getDefaultValue();
-	
 	}
-	
 	return this.__options;
-	
 };
 
 /**
  * Validates and returns the size of the field.
  * Defaults to deprecated 'width' option.
  */
-
 Field.prototype.getSize = function() {
-	if (this.__size) return this.__size;
-	var size = this._fixedSize || this.options.size || this.options.width;
-	if (size !== 'small' && size !== 'medium' && size !== 'large' && size !== 'full') {
-		size = this._defaultSize || 'large';
+	if (!this.__size) {
+		var size = this._fixedSize || this.options.size || this.options.width;
+		if (size !== 'small' && size !== 'medium' && size !== 'large' && size !== 'full') {
+			size = this._defaultSize || 'large';
+		}
+		this.__size = size;
 	}
-	this.__size = size;
-	return size;
+	return this.__size;
 };
 
 /**
  * Gets default value for the field, based on the option or default for the type
  */
-
 Field.prototype.getDefaultValue = function() {
 	return this.options.default || '';
 };
@@ -141,7 +134,6 @@ Field.prototype.getDefaultValue = function() {
 /**
  * Gets the field's data from an Item, as used by the React components
  */
-
 Field.prototype.getData = function(item) {
 	return item.get(this.path);
 };
@@ -149,11 +141,9 @@ Field.prototype.getData = function(item) {
 /**
  * Field watching implementation
  */
-
 Field.prototype.getPreSaveWatcher = function() {
-
-	var field = this,
-		applyValue;
+	var field = this;
+	var applyValue;
 
 	if (this.options.watch === true) {
 		// watch == true means always apply the value method
@@ -212,12 +202,9 @@ Field.prototype.getPreSaveWatcher = function() {
 	};
 
 };
-
 exports = module.exports = Field;
 
-
 /** Getter properties for the Field prototype */
-
 Object.defineProperty(Field.prototype, 'size', { get: function() { return this.getSize(); } });
 Object.defineProperty(Field.prototype, 'initial', { get: function() { return this.options.initial || false; } });
 Object.defineProperty(Field.prototype, 'required', { get: function() { return this.options.required || false; } });
@@ -234,32 +221,22 @@ Object.defineProperty(Field.prototype, 'collapse', { get: function() { return th
 Object.defineProperty(Field.prototype, 'hidden', { get: function() { return this.options.hidden || false; } });
 Object.defineProperty(Field.prototype, 'dependsOn', { get: function() { return this.options.dependsOn || false; } });
 
-
-
 /**
  * Default method to register the field on the List's Mongoose Schema.
  * Overridden by some fieldType Classes
  *
  * @api public
  */
-
 Field.prototype.addToSchema = function() {
-
 	var ops = (this._nativeType) ? _.defaults({ type: this._nativeType }, this.options) : this.options;
-
 	this.list.schema.path(this.path, ops);
-
 	this.bindUnderscoreMethods();
-
 };
 
 Field.prototype.bindUnderscoreMethods = function(methods) {
-
 	var field = this;
-
 	// automatically bind underscore methods specified by the _underscoreMethods property
 	// always include the 'update' method
-
 	(this._underscoreMethods || []).concat({ fn: 'updateItem', as: 'update' }, (methods || [])).forEach(function(method) {
 		if ('string' === typeof method) {
 			method = { fn: method, as: method };
@@ -272,9 +249,7 @@ Field.prototype.bindUnderscoreMethods = function(methods) {
 			return field[method.fn].apply(field, args);
 		});
 	});
-
 };
-
 
 /**
  * Adds a method to the underscoreMethods collection on the field's list,
@@ -282,13 +257,11 @@ Field.prototype.bindUnderscoreMethods = function(methods) {
  *
  * @api public
  */
-
 Field.prototype.underscoreMethod = function(path, fn) {
 	this.list.underscoreMethod(this.path + '.' + path, function() {
 		return fn.apply(this, arguments);
 	});
 };
-
 
 /**
  * Default method to format the field value for display
@@ -296,11 +269,9 @@ Field.prototype.underscoreMethod = function(path, fn) {
  *
  * @api public
  */
-
 Field.prototype.format = function(item) {
 	return item.get(this.path);
 };
-
 
 /**
  * Default method to detect whether the field has been modified in an item
@@ -308,11 +279,9 @@ Field.prototype.format = function(item) {
  *
  * @api public
  */
-
 Field.prototype.isModified = function(item) {
 	return item.isModified(this.path);
 };
-
 
 /**
  * Validates that a value for this field has been provided in a data object
@@ -320,7 +289,6 @@ Field.prototype.isModified = function(item) {
  *
  * @api public
  */
-
 Field.prototype.validateInput = function(data, required, item) {
 	if (!required) return true;
 	var value = this.getValueFromData(data);
@@ -332,31 +300,25 @@ Field.prototype.validateInput = function(data, required, item) {
 	}
 };
 
-
 /**
  * Updates the value for this field in the item from a data object
  * Overridden by some fieldType Classes
  *
  * @api public
  */
-
 Field.prototype.updateItem = function(item, data) {
-	
 	var value = this.getValueFromData(data);
-	
 	// This is a deliberate type coercion so that numbers from forms play nice
 	if (value !== undefined && value != item.get(this.path)) { // eslint-disable-line eqeqeq
 		item.set(this.path, value);
 	}
-	
 };
 
 /**
  * Retrieves the value from an object, whether the path is nested or flattened
- * 
+ *
  * @api public
  */
-
 Field.prototype.getValueFromData = function(data) {
 	return this.path in data ? data[this.path] : this._path.get(data);
 };

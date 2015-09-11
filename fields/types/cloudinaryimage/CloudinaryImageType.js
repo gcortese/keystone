@@ -20,6 +20,7 @@ function cloudinaryimage(list, path, options) {
 
 	this._underscoreMethods = ['format'];
 	this._fixedSize = 'full';
+	this._properties = ['select', 'selectPrefix', 'autoCleanup', 'publicID', 'folder', 'filenameAsPublicID'];
 
 	// TODO: implement filtering, usage disabled for now
 	options.nofilter = true;
@@ -61,6 +62,7 @@ util.inherits(cloudinaryimage, super_);
 cloudinaryimage.prototype.addToSchema = function() {
 
 	var field = this,
+		currentList = this.list,
 		schema = this.list.schema;
 
 	var paths = this.paths = {
@@ -114,6 +116,11 @@ cloudinaryimage.prototype.addToSchema = function() {
 				folderValue = field.options.folder;
 			} else {
 				var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
+//				if (currentList && currentList.options && item && item[currentList.options.owner])
+//				{
+//					console.log("ID proprietario set as root folder in Cloudinary");
+//					folderList.push(item[currentList.options.owner]);
+//				}
 				folderList.push(field.list.path);
 				folderList.push(field.path);
 				folderValue = folderList.join('/');

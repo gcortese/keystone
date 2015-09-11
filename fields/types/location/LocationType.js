@@ -24,7 +24,8 @@ function location(list, path, options) {
 	this._underscoreMethods = ['format', 'googleLookup', 'kmFrom', 'milesFrom'];
 	this._fixedSize = 'full';
 
-	this.enableMapsAPI = keystone.get('google server api key') ? true : false;//keystone.get('google api key') ? true : false; //FABRIZIO
+	this.enableMapsAPI = (options.geocodeGoogle===true || (options.geocodeGoogle !== false && keystone.get('google server api key'))) ? true : false;//	this.enableMapsAPI = keystone.get('google server api key') ? true : false;//keystone.get('google api key') ? true : false; //FABRIZIO
+
 
 	this._properties = ['enableMapsAPI'];
 
@@ -266,8 +267,12 @@ location.prototype.updateItem = function(item, data) {
 
 	if (valuePaths.geo in values) {
 
-		var oldGeo = item.get(paths.geo) || [],
-			newGeo = values[valuePaths.geo];
+		var oldGeo = item.get(paths.geo) || [];
+		if (oldGeo.length > 1) {
+			oldGeo[0] = item.get(paths.geo)[1];
+			oldGeo[1] = item.get(paths.geo)[0];
+		}
+		var newGeo = values[valuePaths.geo];
 
 		if (!Array.isArray(newGeo) || newGeo.length !== 2) {
 			newGeo = [];
@@ -357,7 +362,7 @@ function doGoogleGeocodeRequest(address, region, callback) {
 	var options = {
 		sensor: false,
 		language: 'en',
-		key: keystone.get('google server api key'),// key added as parameter; Enables per-key instead of per-IP-address quota limits (calls to Google Service via application API, not per IP), see https://developers.google.com/maps/documentation/geocoding/#api_key
+		//key: keystone.get('google server api key'),// key added as parameter; Enables per-key instead of per-IP-address quota limits (calls to Google Service via application API, not per IP), see https://developers.google.com/maps/documentation/geocoding/#api_key
 		address: address
 	};
 
@@ -369,6 +374,11 @@ function doGoogleGeocodeRequest(address, region, callback) {
 	if (region) {
 		options.region = region;
 	}
+
+	if (keystone.get('google server api key')){
+		options.key = keystone.get('google server api key');
+	}
+
 	console.log(" GEOCODING options ===================" + JSON.stringify(options));
 	var endpoint = 'https://maps.googleapis.com/maps/api/geocode/json?' + querystring.stringify(options);
 
@@ -386,7 +396,7 @@ function doGoogleGeocodeRequest(address, region, callback) {
 					result = JSON.parse(dataBuff);
 				}
 				catch (exp) {
-					result = {'status_code': 500, 'status_text': 'JSON Parse Failed', 'status': 'UNKNOWN_ERROR'};
+					result = { 'status_code': 500, 'status_text': 'JSON Parse Failed', 'status': 'UNKNOWN_ERROR' };
 				}
 				callback(null, result);
 			});
@@ -421,7 +431,7 @@ location.prototype.googleLookup = function(item, region, update, callback) {
 		address = item.get(this.paths.serialised);
 
 	if (address.length === 0) {
-		return callback({'status_code': 500, 'status_text': 'No address to geocode', 'status': 'NO_ADDRESS'});
+		return callback({ 'status_code': 500, 'status_text': 'No address to geocode', 'status': 'NO_ADDRESS' });
 	}
 
 	doGoogleGeocodeRequest(address, region || keystone.get('default region'), function(err, geocode){

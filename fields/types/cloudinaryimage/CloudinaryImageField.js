@@ -163,7 +163,7 @@ module.exports = Field.create({
 	},
 
 	renderImagePreviewThumbnail: function() {
-		return <img key={this.props.path + '_preview_thumbnail'} className='img-load' style={ { height: '90' } } src={this.getImageSource()} />;
+		return <img key={this.props.path + '_preview_thumbnail'} className='img-load' style={{ height: '90' }} src={this.getImageSource()} />;
 	},
 
 	/**
@@ -276,12 +276,14 @@ module.exports = Field.create({
 	},
 
 	renderImageSelect: function() {
+		var selectPrefix = this.props.selectPrefix;
 		var getOptions = function(input, callback) {
 			$.get('/keystone/api/cloudinary/autocomplete', {
 				dataType: 'json',
 				data: {
 					q: input
-				}
+				},
+				prefix: selectPrefix
 			}, function (data) {
 				var options = [];
 

@@ -1,5 +1,82 @@
 # KeystoneJS Changelog
 
+KeystoneJS is maintained by [@JedWatson](https://github.com/JedWatson) and an amazing team of contributors. All contributions are given credit here except for Jed's.
+
+## v0.3.14 / 2015-08-25
+
+* improved; internal cleanup and refactoring
+* added; new API routes for future use by the Admin UI, including signin and signout
+* added; support for selecting arbitrary document paths in `List.getData`
+* added; new search query generation functionality for `List` and `Field` classes
+* fixed; vertical alignment of Format menu icons in the WYSIWYG editor, thanks [Jeffrey](https://github.com/jeffreypriebe)
+* fixed; validation issues with the `GeoLocation` field type, thanks [Vintesh](https://github.com/vintesh)
+* fixed; use of 'select' and 'selectPrefix' options in CloudinaryImage type, thanks [azterix](https://github.com/azterix)
+* updated; grappling-hook @ v3.0.0, thanks [Camille Reynders](https://github.com/creynders)
+
+## v0.3.13 / 2015-08-03
+
+* improved; major speed increase for initialisation
+* improved; codemirror is now only loaded as required, thanks [Carlos Colon](https://github.com/webteckie)
+* fixed; correctly handling blank values in the DateInput component
+* changed; switched to babyparse for CSV generation
+* fixed; docs links now point to keystone site
+* fixed; add Maps API key to request, allow override per model, check for server instead of browser key, thanks [stosorio](https://github.com/stosorio)
+* fixed; added check for duplicate `_revisions` models, thanks [Jeffrey](https://github.com/jeffreypriebe)
+* fixed; localFile .format property ignored by Admin U, thanks [Javier Castro](https://github.com/jacargentina)
+* fixed; href working correctly on LocalFiles Type, thanks [Matthias Tylkowski](https://github.com/tylkomat)
+* added; several new API endpoints for the Admin UI in preparation of the 0.4 release
+
+
+## v0.3.12 / 2015-06-26
+
+* fixed; `height` option for TextArea fields was not respected in the Admin UI, thanks [Eóin Martin](https://github.com/SlashmanX)
+* fixed; API error string was missing `not` in message, thanks [Daniel Cousens](https://github.com/dcousens)
+* improved; better instructions for installing missing session store modules
+* fixed; delete confirmation was not working (items could be deleted with a single click), thanks [gerotakke](gerotakke)
+* added; new `utc` option for `Date` and `DateTime` field types, see [#1487](https://github.com/keystonejs/keystone/issues/1487) for more details.
+
+## v0.3.11 / 2015-06-12
+
+* fixed; issues with file field types not working correclty with getters, thanks [Alexander Shemetovsky](https://github.com/AlexKVal)
+* fixed; bug saving lat / lng in location fields, thanks [Al Connelly](https://github.com/WingedToaster)
+* fixed; issue saving blank values in money fields, thanks [Harry Moreno](https://github.com/morenoh149)
+* fixed; Admin UI issues caused by custom toJSON / toObject transforms configured for models
+* improved; optimised items list
+
+All is not as quiet as this release implies; we are working aggressively through the next big update in the `elemental-integration` branch, which will see the Admin UI released as a Single Page Application built with [Elemental UI](http://elemental-ui.com) components, and the foundation for much better customisation features to come.
+
+If you are interested in being part of Keystone's development team and aren't in our Slack channel, ping @JedWatson to get an invite!
+
+## v0.3.10 / 2015-05-19
+
+* fixed; worked around an intermittent issue with the new browserify build process
+* added; new hooks `updates`, `signin` and `signout`, thanks [Camille Reynders](https://github.com/creynders)
+* added; `parseFormat` option for `Date` / `Datetime` field types, and more robust validation in `DateArray`
+* added; `logger options` setting, thanks [Johnny Estilles](https://github.com/JohnnyEstilles)
+
+Also, our site and documentation have been split out into their own repository: [keystonejs/keystonejs-site](https://github.com/keystonejs/keystonejs-site). Please contribute any changes, additions and issues to that new repo going forward.
+
+## v0.3.9 / 2015-05-17
+
+* added; Babel `object-assign` plugin for the Admin UI browserify build process
+* improved; The whole Admin UI JS build system has been rewritten and should now be completely stable and much faster than any previous setup. You can enable development mode with the `KEYSTONE_DEV=true` environment variable
+* fixed / changed; the LESS config api was changed with `less-middleware@2.0.0` and you should now just use the `less options` setting, thanks [Francesco Nero](https://github.com/francesconero). Old options will log warnings if you use them.
+* fixed; The path to `react-select`'s less file is now dynamically detected, see #1384
+* fixed; The `href` method of localfile/s shouldn't use `path.join`, see #1406
+* fixed; display issues with Type.GeoPoint and Type.Location, thanks [Al Connelly](https://github.com/WingedToaster)
+* added; SVG Support for Cloudinary Image fields, thanks [Christian Nolte](https://github.com/drlogout)
+* fixed; Disabled drag and drop sorting in list view when filters are applied, thanks [Michael](https://github.com/mldangelo)
+* improved; Now using [grappling-hook](https://github.com/keystonejs/grappling-hook), thanks [Camille Reynders](https://github.com/creynders)
+* improved; The Location field throws an error if `googleLookup` fails, thanks [Daniel Cousens](https://github.com/dcousens)
+* fixed; issues with schema inheritance and schemaPlugins, thanks [Robert Clark](https://github.com/lojack)
+* fixed; default `formatString` for Datetime fields now includes `h:m:s a`, thanks [Al Connelly](https://github.com/WingedToaster)
+* fixed; `Keystone.prototype.static(app)` was removed in 0.3.7, has been reintroduced for backwards-compatibility
+* changed; `react-alt-text` is now its own npm package
+* changed; The Admin UI is being consolidated into `/admin` and many files have moved, thanks to [Milos Dakic](https://github.com/milosdakic) for helping with this.
+
+Also in this release: Keystone is completely free of ESLint warnings thanks to the incredible efforts of [Camille Reynders](https://github.com/creynders) and [Jed Watson](https://github.com/JedWatson).
+
+
 ## v0.3.8 / 2015-04-23
 
 * fixed; worked around a breaking issue with the `bytes` package by downgrading it and including it in the pre-built Admin UI packages bundle

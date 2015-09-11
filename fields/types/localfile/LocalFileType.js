@@ -205,7 +205,7 @@ localfile.prototype.hasFormatter = function() {
 localfile.prototype.href = function(item) {
 	if (!item.get(this.paths.filename)) return '';
 	var prefix = this.options.prefix ? this.options.prefix : item.get(this.paths.path);
-	return path.join(prefix, item.get(this.paths.filename));
+	return prefix + '/' + item.get(this.paths.filename);
 };
 
 
@@ -291,7 +291,7 @@ localfile.prototype.uploadFile = function(item, file, update, callback) {
 		});
 	};
 
-	field.callHook('pre:move', [item, file], function(err) {
+	field.callHook('pre:move', item, file, function(err) {
 		if (err) return callback(err);
 		doMove(function(err, fileData) {
 			if (err) return callback(err);

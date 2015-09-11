@@ -16,7 +16,7 @@ module.exports = {
 	localfile:  	  require('../../fields/types/localfile/LocalFileField'),
 	localfiles:       require('../../fields/types/localfiles/LocalFilesField'),
 	location:         require('../../fields/types/location/LocationField'),
-	EUlocation:         require('../../fields/types/euLocation/EULocationField'),
+	EUlocation:       require('../../fields/types/euLocation/EULocationField'),
 	markdown:         require('../../fields/types/markdown/MarkdownField'),
 	money:            require('../../fields/types/money/MoneyField'),
 	name:             require('../../fields/types/name/NameField'),

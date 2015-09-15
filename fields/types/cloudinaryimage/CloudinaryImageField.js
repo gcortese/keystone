@@ -276,7 +276,36 @@ module.exports = Field.create({
 	},
 
 	renderImageSelect: function() {
-		var selectPrefix = this.props.selectPrefix;
+		var selectPrefix = this.props.selectPrefix || this.props.folder;//|| FABRIZIO, vedi doc keystone
+		var folderValue;
+		
+		//FABRIZIO//replica e rearrangment codice folder() in CloudinaryImageType per ricostruire cloudinary folder e presentare opzioni della select corrette
+		if(!selectPrefix && this.props.values)//item
+		{
+			var folderList = Keystone.cloudinary.prefix ? [Keystone.cloudinary.prefix] : [];
+
+			if(Keystone.list.key == Keystone.UserListName && Keystone.user && !Keystone.user.isAdmin)//gestione caso User
+			{
+				//var userName = this.props.values.name.first + "_" + this.props.values.name.last + "_" + this.props.values._id; //this.props.values._id undefined, prendo utente loggato se non e' admin
+				var userName = Keystone.user.name.first + "_" + Keystone.user.name.last + "_" + Keystone.user._id;
+				folderList.push(userName);
+			}
+			else if (this.props.values && this.props.values.createdBy && this.props.values.createdBy.name)//NB deve essere sempre impostato in modello!(track options = true)
+			{
+				console.log("ID createdBy set as root folder in Cloudinary");
+				var userName = this.props.values.createdBy.name.first + "_" + this.props.values.createdBy.name.last + "_" + this.props.values.createdBy._id;
+				folderList.push(userName);
+			}
+
+			var label = Keystone.list.label ? Keystone.list.label : Keystone.list.path;//metto label invece che path della keystone.list come 2nd folder
+			folderList.push(label);//folderList.push(field.list.path);
+			folderList.push(this.props.path);
+			folderValue = folderList.join('/');
+			
+			console.log("folder prefix!!!", folderValue);
+			selectPrefix = folderValue;
+		}
+		
 		var getOptions = function(input, callback) {
 			$.get('/keystone/api/cloudinary/autocomplete', {
 				dataType: 'json',

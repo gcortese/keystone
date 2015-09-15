@@ -62,7 +62,6 @@ util.inherits(cloudinaryimage, super_);
 cloudinaryimage.prototype.addToSchema = function() {
 
 	var field = this,
-		currentList = this.list,
 		schema = this.list.schema;
 
 	var paths = this.paths = {
@@ -116,17 +115,27 @@ cloudinaryimage.prototype.addToSchema = function() {
 				folderValue = field.options.folder;
 			} else {
 				var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
-//				if (currentList && currentList.options && item && item[currentList.options.owner])
-//				{
-//					console.log("ID proprietario set as root folder in Cloudinary");
-//					folderList.push(item[currentList.options.owner]);
-//				}
-				folderList.push(field.list.path);
+				
+				//FABRIZIO
+				if(field.list.key == keystone.get('user model') && item.name)//gestione caso User
+				{
+					var userName = item.name.first + "_" + item.name.last + "_" + item._id;
+					folderList.push(userName);
+				}
+				else if (item && item.createdBy && item.createdBy.name)//NB deve essere sempre impostato in modello!(track options = true)
+				{
+					console.log("ID createdBy set as root folder in Cloudinary");
+					var userName = item.createdBy.name.first + "_" + item.createdBy.name.last + "_" + item.createdBy._id;
+					folderList.push(userName);
+				}
+
+				var label = field.list.options.label ? field.list.options.label : field.list.path;//FABRIZIO, metto label invece che path della keystone.list come 2nd folder
+				folderList.push(label);//folderList.push(field.list.path);//FABRIZIO
 				folderList.push(field.path);
 				folderValue = folderList.join('/');
 			}
 		}
-
+		console.log("folder function called", folderValue);
 		return folderValue;
 	};
 

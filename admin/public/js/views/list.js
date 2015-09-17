@@ -205,6 +205,7 @@ jQuery(function($) {
 				switch (data.type) {
 					case 'text':
 					case 'textarea':
+					case 'textarray':
 					case 'html':
 					case 'email':
 					case 'url':

@@ -243,7 +243,17 @@ block content
 											| exact match
 									.filter-input.filter-input-md: input(type='text', name='value', value=ops.value).form-control.input-xs
 									button(type='button', data-toggle='button', class=ops.inverse ? 'active' : '', data-opt='inv', data-value='true').btn.btn-xs.btn-default invert
-								
+									
+								//-TextArray
+								if field.type == 'textarray'
+									.btn-group.btn-group-xs(data-toggle='buttons')
+										button(type='button', class=!ops.inverse ? 'active' : '').btn.btn-default
+											input(type='radio', name='options')
+											| contains
+										button(type='button', class=ops.inverse ? 'active' : '', data-opt='inv', data-value='true').btn.btn-default
+											input(type="radio", name="options")
+											| not contains
+									.filter-input.filter-input-md: input(type='text', name='value', value=ops.value).form-control.input-xs
 								//- Numeric Fields
 								if field.type == 'number' || field.type == 'money'
 									.btn-group.btn-group-operator.btn-group-xs(data-toggle='buttons')
@@ -303,7 +313,7 @@ block content
 									.filter-input.filter-input-sm: input(type='text', name='postcode', value=ops.value[3], placeholder='Postcode').form-control.input-xs
 									.filter-input.filter-input-sm: input(type='text', name='country', value=ops.value[4], placeholder='Country').form-control.input-xs
 								
-								//- Location
+								//- EULocation
 								if field.type == 'EUlocation'
 									- ops.value = ops.value || []
 									.filter-input.filter-input-md: input(type='text', name='address', value=ops.value[0], placeholder='Address').form-control.input-xs

@@ -76,7 +76,7 @@ html
 								li: a(href='/keystone/signin') Sign In
 
 		//- BODY
-		#body
+		#body: .container
 
 			//- NOTE:
 			//- There is no .container wrapping class around body blocks to allow more flexibility in design.
@@ -87,8 +87,8 @@ html
 
 			//- Flash messages allow you to display once-off status messages to users, e.g. form
 			//- validation errors, success messages, etc.
-			block flash-messages
-				+flash-messages(messages)
+			//block flash-messages
+			+flash-messages(messages)
 
 			//- The content block should contain the body of your template's content
 			block content

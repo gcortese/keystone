@@ -468,6 +468,10 @@ EUlocation.prototype.googleLookup = function(item, region, update, callback) {
 			if ( _.indexOf(val.types, 'locality') >= 0 ) {//sovrascrivo
 				location.city = val.long_name;
 			}
+			if (!location.city && _.indexOf(val.types, 'administrative_area_level_3') >= 0){
+				location.city = val.long_name;
+			}
+			
 			if ( _.indexOf(val.types, 'administrative_area_level_1') >= 0 ) {
 				location.region = val.long_name;
 			}
@@ -485,7 +489,12 @@ EUlocation.prototype.googleLookup = function(item, region, update, callback) {
 //		if (Array.isArray(location.street)) {
 //			location.street = location.street.join(', ');
 //		}
-		location.street = location.route + ", " + location.street_number;
+		var locationRoute = location.route ? location.route : '';
+		if(location.street_number)
+		{
+			locationRoute += ', ' + location.street_number;
+		}
+		location.street = locationRoute;
 
 		location.geo = [
 			result.geometry.location.lng,

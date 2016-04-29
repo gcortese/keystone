@@ -496,10 +496,13 @@ EUlocation.prototype.googleLookup = function(item, region, update, callback) {
 		}
 		location.street = locationRoute;
 
-		location.geo = [
-			result.geometry.location.lng,
-			result.geometry.location.lat
-		];
+		if (result.geometry && result.geometry.location)	
+		{
+			location.geo = [
+				result.geometry.location.lng,
+				result.geometry.location.lat
+			];
+		}
 
 		//console.log('------ Google Geocode Results ------');
 		//console.log(address);

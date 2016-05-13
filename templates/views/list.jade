@@ -204,6 +204,10 @@ block content
 												span= el.field.label
 									if list.tracking
 										li.divider
+											if list.tracking.createdBy
+												li: a(href=js, data-col=list.tracking.createdBy).btn-toggle-column
+													span(class=_.contains(colPaths, list.tracking.createdBy) ? 'ion-checkmark' : '').icon
+													span CreatedBy
 											if list.tracking.createdAt
 												li: a(href=js, data-col=list.tracking.createdAt).btn-toggle-column
 													span(class=_.contains(colPaths, list.tracking.createdAt) ? 'ion-checkmark' : '').icon

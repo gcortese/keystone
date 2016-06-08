@@ -419,7 +419,12 @@ cloudinaryimage.prototype.getRequestHandler = function(item, req, paths, callbac
 					uploadOptions.public_id = publicIdValue;
 				}
 			} else if (field.options.filenameAsPublicID) {
-				uploadOptions.public_id = req.files[paths.upload].originalname.substring(0, req.files[paths.upload].originalname.lastIndexOf('.'));
+				
+				var originalFileName = req.files[paths.upload].originalname.substring(0, req.files[paths.upload].originalname.lastIndexOf('.'));
+				
+				//FABRIZIO: unicita data da _id mongo (unicita piu leggibilita file)-> 1.Cloudinary assegna id unico ma illegibile, 2. se si mantiene il nome del file originale si ha leggibilita ma non univocita, pb per upload e cancellazione (file sovrascritti)
+				uploadOptions.public_id = item._id + '-' + originalFileName;
+				//uploadOptions.use_filename = true;//FABRIZIO: MA non sufficiente->viene infatti usato temporary path invece che originalName  //Set use_filename as true to tell Cloudinary to use the original name of the uploaded image file as its Public ID. Notice that the file name will be normalized and a set of random characters will be appended to it to ensure uniqueness
 			}
 
 			if (field.options.autoCleanup && item.get(field.paths.exists)) {
